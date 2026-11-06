@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Livret d'accueil — Master SEP Reims</title>
+<meta name="description" content="Livret d'accueil des nouveaux étudiants du Master Statistique pour l'Évaluation et la Prévision (SEP) de l'Université de Reims Champagne-Ardenne.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ---------- COULEURS (modifiables) ---------- */
+  :root {
+    --bleu: #1d2f5c;        /* couleur principale */
+    --or: #c9a24a;          /* accent "champagne" */
+    --fond: #faf8f3;
+    --carte: #ffffff;
+    --texte: #1f2430;
+    --texte-doux: #5b6272;
+    --bord: #e4e0d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bleu: #8fa8e8; --or: #d9b866; --fond: #14171f; --carte: #1c2030;
+      --texte: #e8e9ee; --texte-doux: #a3a9b8; --bord: #2c3245;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+  body { margin: 0; font-family: Inter, system-ui, sans-serif; line-height: 1.6;
+         background: var(--fond); color: var(--texte); }
+  h1, h2, h3 { font-family: Fraunces, Georgia, serif; line-height: 1.2; }
+  h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); color: var(--bleu); margin: 0 0 .4rem; }
+  h3 { font-size: 1.15rem; margin: 0 0 .5rem; }
+  a { color: var(--bleu); }
+  .conteneur { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
+
+  /* En-tête */
+  header { background: #1d2f5c; color: #fff; padding: 64px 0 48px; }
+  header .surtitre { color: #d9b866; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: .8rem; }
+  header h1 { font-size: clamp(2rem, 6vw, 3.2rem); margin: .3rem 0 1rem; }
+  header p { max-width: 640px; opacity: .9; margin: 0; }
+
+  /* Navigation */
+  nav { position: sticky; top: 0; z-index: 10; background: var(--carte); border-bottom: 1px solid var(--bord); }
+  nav ul { display: flex; gap: 4px; list-style: none; margin: 0 auto; padding: 8px 16px; max-width: 1000px; overflow-x: auto; }
+  nav a { display: block; padding: 8px 14px; border-radius: 999px; text-decoration: none; color: var(--texte-doux); font-weight: 500; white-space: nowrap; }
+  nav a.actif, nav a:hover { background: var(--bleu); color: var(--carte); }
+
+  section { padding: 56px 0; border-bottom: 1px solid var(--bord); }
+  .intro { color: var(--texte-doux); margin: 0 0 1.8rem; max-width: 680px; }
+
+  .grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 12px; padding: 20px; }
+  .carte ul { padding-left: 1.1rem; margin: .3rem 0 0; }
+  .chiffre { font-family: Fraunces, serif; font-size: 2rem; color: var(--or); font-weight: 700; }
+
+  .plans { display: grid; gap: 16px; margin-bottom: 1.8rem; }
+  .plans figure { margin: 0; }
+  .plans img { display: block; width: 100%; height: auto; border-radius: 8px; }
+  .plans figcaption { margin-top: .6rem; font-weight: 600; text-align: center; }
+
+  details { background: var(--carte); border: 1px solid var(--bord); border-radius: 12px; padding: 14px 20px; margin-bottom: 10px; }
+  summary { cursor: pointer; font-weight: 600; }
+  details[open] summary { margin-bottom: .6rem; }
+
+  /* Checklist */
+  .progression { height: 10px; background: var(--bord); border-radius: 999px; overflow: hidden; margin: 8px 0 24px; }
+  .progression div { height: 100%; width: 0; background: var(--or); transition: width .3s; }
+  .checklist { list-style: none; padding: 0; margin: 0; }
+  .checklist li { padding: 6px 0; }
+  .checklist label { display: flex; gap: 10px; cursor: pointer; }
+  .checklist input { margin-top: 5px; accent-color: var(--bleu); }
+  .checklist input:checked + span { text-decoration: line-through; color: var(--texte-doux); }
+  button { font: inherit; background: none; border: 1px solid var(--bord); color: var(--texte-doux); border-radius: 8px; padding: 6px 14px; cursor: pointer; }
+
+  table { width: 100%; border-collapse: collapse; background: var(--carte); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--bord); vertical-align: top; }
+  th { background: var(--bleu); color: var(--carte); }
+  .tableau { overflow-x: auto; }
+
+  footer { padding: 32px 0; color: var(--texte-doux); font-size: .9rem; }
+
+  @media print {
+    nav, button { display: none; }
+    header { padding: 24px 0; }
+    section { page-break-inside: avoid; padding: 24px 0; }
+    details { border: none; } details > * { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SECTION : EN-TÊTE ===== -->
+<header>
+  <div class="conteneur">
+    <div class="surtitre">Livret d'accueil</div>
+    <h1>Bienvenue dans le Master SEP à Reims</h1>
+    <p>Master Statistique pour l'Évaluation et la Prévision</p>
+    <p>Université de Reims Champagne-Ardenne.</p>
+    <p>Ce livret rassemble ce qu'il faut savoir pour arriver sereinement à Reims.</p>
+  </div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="#master">Le master</a></li>
+    <li><a href="#installer">S'installer</a></li>
+    <li><a href="#campus">Campus</a></li>
+    <li><a href="#prerequis">Prérequis</a></li>
+    <li><a href="#logiciels">Logiciels</a></li>
+    <li><a href="#materiel">Matériel</a></li>
+    <li><a href="#infos">Infos utiles</a></li>
+    <li><a href="#checklist">Checklist</a></li>
+    <li><a href="#contacts">Contacts</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ===== SECTION : LE MASTER ===== -->
+<section id="master">
+  <div class="conteneur">
+    <h2>Le master</h2>
+    <p class="intro">Le master SEP réunit des étudiants venus des mathématiques et de l'économie (APE).
+      Il forme des statisticiens, data analysts et data scientists capables
+      de dialoguer avec des non-spécialistes.</p>
+
+    <div class="grille">
+      <div class="carte"><div class="chiffre">2 ans</div>M1 + M2, sur les campus Croix-Rouge et Moulin de la Housse</div>
+      <div class="carte"><div class="chiffre">Stage ou alternance</div>en M2 : stage de 6 mois à partir de mars, ou alternance</div>
+    </div>
+
+    <h3 style="margin-top:2rem">Débouchés</h3>
+    <p>Data analyst, data scientist, data engineer, analytics engineer, chargé d'études statistiques, statisticien.</p>
+    <p>Il est aussi possible de poursuivre en recherche (doctorat).</p>
+
+    <h3 style="margin-top:2rem">Le mot des étudiants</h3>
+    <div class="carte">(Témoignage d'un(e) étudiant(e) (IVE témoignages des anciens))</div>
+  </div>
+</section>
+
+<!-- ===== SECTION : S'INSTALLER À REIMS ===== -->
+<section id="installer">
+  <div class="conteneur">
+    <h2>S'installer à Reims</h2>
+    <p class="intro">Le logement part vite : commencez vos recherches dès l'admission confirmée, idéalement avant l'été.</p>
+
+    <details open>
+      <summary>Trouver un logement</summary>
+      <ul>
+        <li><strong>Crous</strong> : Huit résidences dans la région, priorité aux boursiers.
+            Demande via <a href="https://www.messervices.etudiant.gouv.fr" target="_blank" rel="noopener">messervices.etudiant.gouv.fr</a>
+            et offres sur <a href="https://trouverunlogement.lescrous.fr" target="_blank" rel="noopener">trouverunlogement.lescrous.fr</a>.</li>
+        <li><strong>Résidences privées</strong> :
+          <ul>
+            <li>MGEL Logement :
+              <a href="https://mgellogement.fr/logement-etudiant/reims-quai/" target="_blank" rel="noopener">Quai 207</a>,
+              <a href="https://mgellogement.fr/logement-etudiant/reims-laudine/" target="_blank" rel="noopener">Laudine</a>,
+              <a href="https://mgellogement.fr/logement-etudiant/reims-bulles/" target="_blank" rel="noopener">Les Bulles</a></li>
+            <li><a href="https://www.estudines.com/logement-etudiant-reims/residence-drouet-d-erlon" target="_blank" rel="noopener">Les Estudines Drouet d'Erlon</a></li>
+          </ul></li>
+        <li><strong>Le Foyer Rémois</strong> : <a href="https://www.foyer-remois.fr" target="_blank" rel="noopener">foyer-remois.fr</a></li>
+        <li><strong>Lokaviz</strong> : portail de logements étudiants, sur <a href="https://www.lokaviz.fr" target="_blank" rel="noopener">lokaviz.fr</a></li>
+        <li><strong>Secteurs conseillés</strong> : centre-ville, Clairmarais, Jean-Jaurès, Cernay, Saint-Remi, Courlancy.</li>
+        <li><strong>Garant</strong> : si vous n'en avez pas, la garantie <a href="https://www.visale.fr" target="_blank" rel="noopener">Visale</a> est gratuite.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Aides financières</summary>
+      <ul>
+        <li><strong>Aide au logement (APL/ALS)</strong> : simulation et demande sur <a href="https://www.caf.fr" target="_blank" rel="noopener">caf.fr</a>, à faire dès la signature du bail.</li>
+        <li><strong>Bourse Crous</strong> : dossier social étudiant sur messervices.etudiant.gouv.fr.</li>
+        <li><strong>CVEC</strong> : à acquitter avant l'inscription sur <a href="https://cvec.etudiant.gouv.fr" target="_blank" rel="noopener">cvec.etudiant.gouv.fr</a> (exonération pour les boursiers).</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Se déplacer</summary>
+      <ul>
+        <li>Réseau de bus et tram : <a href="https://grandreims-mobilites.fr/" target="_blank" rel="noopener">Citura</a> (tarifs étudiants disponibles).</li>
+    </details>
+
+    <details>
+      <summary>Santé et vie quotidienne</summary>
+      <ul>
+        <li>Mettez à jour votre adresse auprès de l'Assurance maladie (<a href="https://www.ameli.fr" target="_blank" rel="noopener">ameli.fr</a>) et déclarez un médecin traitant à Reims.</li>
+        <li>Service de santé étudiant: SSE Bâtiment 20 campus Croix-Rouge et SUMPPS campus Moulin de la Housse.</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+<!-- ===== SECTION : CAMPUS ET VIE ÉTUDIANTE ===== -->
+<section id="campus">
+  <div class="conteneur">
+    <h2>Campus et vie étudiante</h2>
+    <p class="intro">Les cours ont lieu sur les deux campus: campus Croix-Rouge, 57 rue Pierre Taittinger, 51100 Reims et campus Moulin de la Housse, Chem. des Rouliers, 51100 Reims.</p>
+
+    <div class="plans">
+      <figure class="carte">
+        <a href="images/plan-croix-rouge.png" target="_blank"><img src="images/plan-croix-rouge.png" alt="Plan du campus Croix-Rouge"></a>
+        <figcaption>Campus Croix-Rouge</figcaption>
+      </figure>
+      <figure class="carte">
+        <a href="images/plan-moulin-de-la-housse.png" target="_blank"><img src="images/plan-moulin-de-la-housse.png" alt="Plan du campus Moulin de la Housse"></a>
+        <figcaption>Campus Moulin de la Housse</figcaption>
+      </figure>
+    </div>
+
+    <div class="grille">
+      <div class="carte">
+        <h3>Étudier</h3>
+        <ul>
+          <li>Bibliothèques universitaires (<a href="https://www.univ-reims.fr/bu" target="_blank" rel="noopener">horaires et services</a>) :
+            <ul>
+              <li>BU Robert de Sorbon, campus Croix-Rouge</li>
+              <li>BU Moulin de la Housse, campus Moulin de la Housse</li>
+              <li>BU Santé, 51 rue Cognacq-Jay</li>
+              <li>BU Reims Éducation (INSPÉ)</li>
+            </ul></li>
+          <li>Impression et scan disponibles dans les BU, payables avec Izly</li>
+          <li>Médiathèques de la ville (<a href="https://www.bm-reims.fr" target="_blank" rel="noopener">bm-reims.fr</a>) :
+            <ul>
+              <li>Médiathèque Jean Falala, 2 rue des Fuseliers</li>
+              <li>Médiathèque Croix-Rouge, 19 rue Jean-Louis Debar</li>
+              <li>Médiathèque Laon-Zola, 2 rue de la Neuvillette</li>
+              <li>Bibliothèque Carnegie, 2 place Carnegie</li>
+              <li>Bibliothèque Saint-Remi, 19 esplanade des Capucins</li>
+              <li>Bibliothèque Chemin Vert, 12 avenue de l'Yser</li>
+            </ul></li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>Associations</h3>
+    <p>Liste complète dans l'<a href="https://www.univ-reims.fr/media-files/78376/annuaire_associationsetudiantes_2026.2027-2-.pdf" target="_blank" rel="noopener">annuaire des associations étudiantes de l'URCA</a>.</p>
+  </div>
+</section>
+
+<!-- ===== SECTION : PRÉREQUIS ===== -->
+<section id="prerequis">
+  <div class="conteneur">
+    <h2>Prérequis des cours</h2>
+    <div class="grille">
+      <div class="carte">
+        <h3>M1 parcours maths</h3>
+        <a>Voir les prérequis (lien datacamp)</a>
+      </div>
+      <div class="carte">
+        <h3>M1 parcours APE</h3>
+        <a>Voir les prérequis (lien datacamp)</a>
+      </div>
+      <div class="carte">
+        <h3>M2</h3>
+        <a>Voir les prérequis (lien datacamp)</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION : LOGICIELS ===== -->
+<section id="logiciels">
+  <div class="conteneur">
+    <h2>Logiciels à installer</h2>
+    <p class="intro">Installez ces logiciels avant la rentrée. Les étapes dépendent de votre système (Windows, macOS ou Linux).</p>
+
+    <h3>Pour les maths</h3>
+    <details>
+      <summary>MATLAB</summary>
+      <p>Logiciel de calcul numérique et de programmation scientifique.</p>
+      <ul>
+        <li><strong>Windows, macOS, Linux</strong> : créez un compte MathWorks puis téléchargez l'installateur sur
+          <a href="https://www.mathworks.com/downloads/" target="_blank" rel="noopener">mathworks.com/downloads</a>.</li>
+        <li><strong>Sans installation</strong> : <a href="https://matlab.mathworks.com" target="_blank" rel="noopener">MATLAB Online</a>, dans le navigateur.</li>
+      </ul>
+    </details>
+
+    <h3 style="margin-top:2rem">Pour tout le monde</h3>
+    <details>
+      <summary>R</summary>
+      <p>Langage de programmation pour la statistique et la data science.</p>
+      <ul>
+        <li><strong>Windows</strong> : sur <a href="https://cran.r-project.org/" target="_blank" rel="noopener">cran.r-project.org</a>, choisissez « Download R for Windows » puis « base », et lancez l'installateur.
+          Installez ensuite <a href="https://cran.r-project.org/bin/windows/Rtools/" target="_blank" rel="noopener">Rtools</a>, dans la version correspondant à votre R.</li>
+        <li><strong>macOS</strong> : téléchargez le fichier <code>.pkg</code> sur <a href="https://cran.r-project.org/" target="_blank" rel="noopener">cran.r-project.org</a> (version Apple Silicon ou Intel selon votre Mac) et suivez l'installateur.</li>
+        <li><strong>Linux</strong> : installez R avec le gestionnaire de paquets, en suivant les instructions CRAN de votre distribution.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>RStudio</summary>
+      <p>Environnement de travail pour R (à installer après R). Gratuit, il gère aussi R Markdown et Quarto.</p>
+      <ul>
+        <li><strong>Windows, macOS, Linux</strong> : téléchargez RStudio Desktop sur
+          <a href="https://posit.co/download/rstudio-desktop/" target="_blank" rel="noopener">posit.co/download/rstudio-desktop</a>.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Power BI</summary>
+      <p>Outil de Microsoft pour créer des tableaux de bord et visualiser des données.</p>
+      <ul>
+        <li><strong>Windows</strong> : téléchargez Power BI Desktop sur
+          <a href="https://www.microsoft.com/fr-fr/download/details.aspx?id=58494" target="_blank" rel="noopener">microsoft.com</a>.</li>
+        <li><strong>macOS et Linux</strong> : Power BI Desktop n'existe pas. Utilisez la version en ligne,
+          <a href="https://app.powerbi.com" target="_blank" rel="noopener">Power BI Service</a>, qui a moins de fonctionnalités.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Excel</summary>
+      <p>Tableur de Microsoft, utile pour manipuler rapidement des données et faire des tableaux croisés dynamiques.</p>
+      <ul>
+        <li><strong>Windows et macOS</strong> : installez Microsoft 365 depuis <a href="https://www.office.com" target="_blank" rel="noopener">office.com</a>.</li>
+        <li><strong>Linux</strong> : utilisez la version en ligne sur <a href="https://www.office.com" target="_blank" rel="noopener">office.com</a>.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Git (Git Bash)</summary>
+      <p>Outil de gestion de versions, utilisé pour les projets de groupe. En cours, on l'utilise avec Git Bash, un terminal pour taper les commandes Git.
+        Installez R et RStudio avant Git.</p>
+      <ul>
+        <li><strong>Windows</strong> :
+          <ol>
+            <li>Installez d'abord l'éditeur de texte <a href="https://notepad-plus-plus.org/downloads/" target="_blank" rel="noopener">Notepad++</a>.</li>
+            <li>Téléchargez Git sur <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">git-scm.com/downloads</a>.
+              Pendant l'installation, choisissez <strong>Notepad++</strong> comme éditeur de texte associé à Git. Git Bash est installé avec Git.</li>
+            <li>Dans RStudio, utilisez Git Bash comme terminal : <code>Tools</code> &gt; <code>Global Options...</code> &gt; <code>Terminal</code>,
+              puis choisissez <code>Git Bash</code> dans le champ <code>New terminals open with</code>.</li>
+          </ol></li>
+        <li><strong>macOS et Linux</strong> : Git Bash n'est pas nécessaire, le Terminal (bash ou zsh) accepte les mêmes commandes.
+          Installez Git depuis <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">git-scm.com/downloads</a>,
+          puis choisissez nano comme éditeur : <code>git config --global core.editor "nano"</code></li>
+        <li><strong>Configuration (tout le monde)</strong> : dans le terminal, tapez
+          <br><code>git config --global user.name "Prénom Nom"</code>
+          <br><code>git config --global user.email "mon.adresse@mail.com"</code></li>
+        <li><strong>GitLab de l'URCA</strong> : les projets du master sont hébergés sur le serveur GitLab des départements de maths et d'informatique
+          (<a href="https://gitlab-mi.univ-reims.fr" target="_blank" rel="noopener">gitlab-mi.univ-reims.fr</a>).
+          Connectez-vous une première fois avec vos identifiants de l'université (CAS).</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Environnement Python (Anaconda / VS Code)</summary>
+      <p>Python est le langage de base de la data science et du machine learning.</p>
+      <ul>
+        <li><strong>Anaconda</strong> (Windows, macOS, Linux) : installe Python avec les principales bibliothèques (pandas, numpy, scikit-learn) et Jupyter.
+          Téléchargement sur <a href="https://www.anaconda.com/download" target="_blank" rel="noopener">anaconda.com/download</a>.</li>
+        <li><strong>VS Code</strong> (Windows, macOS, Linux) : éditeur de code, sur <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">code.visualstudio.com</a>.
+          Ajoutez ensuite les extensions « Python » et « Jupyter ».</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>DBeaver</summary>
+      <p>Logiciel pour se connecter à des bases de données et écrire des requêtes SQL.</p>
+      <ul>
+        <li><strong>Windows, macOS, Linux</strong> : téléchargez la version gratuite (Community Edition) sur
+          <a href="https://dbeaver.io/download/" target="_blank" rel="noopener">dbeaver.io/download</a>.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Docker</summary>
+      <p>Outil pour lancer des applications dans des « conteneurs », avec le même environnement sur toutes les machines.</p>
+      <ul>
+        <li><strong>Windows</strong> : installez <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener">Docker Desktop</a>. Il demande d'activer WSL 2, l'installateur vous guide.</li>
+        <li><strong>macOS</strong> : installez <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener">Docker Desktop</a> (version Apple Silicon ou Intel).</li>
+        <li><strong>Linux</strong> : installez Docker Engine en suivant <a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener">la documentation officielle</a>.</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+<!-- ===== SECTION : MATÉRIEL ===== -->
+<section id="materiel">
+  <div class="conteneur">
+    <h2>Matériel</h2>
+    <div class="grille">
+      <div class="carte">
+        <h3>Un ordinateur portable</h3>
+        Indispensable pour suivre les cours et installer les logiciels.
+      </div>
+      <div class="carte">
+        <h3>Pas d'ordinateur ?</h3>
+        Les BU prêtent des ordinateurs portables. Faites la demande dès la rentrée : le nombre d'ordinateurs est limité.
+        <a href="https://www.univ-reims.fr/bu/accueil/et-si-vous-empruntiez-un-portable-a-la-bu-pour-travailler-partout,9200,44036.html" target="_blank" rel="noopener">Voir les conditions d'emprunt</a>
+      </div>
+      <div class="carte">
+        <h3>Caméra et micro</h3>
+        Vérifiez qu'ils fonctionnent : certains cours ont lieu en ligne.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION : INFOS UTILES ===== -->
+<section id="infos">
+  <div class="conteneur">
+    <h2>Infos utiles</h2>
+
+    <h3>Stages et alternances</h3>
+    <div class="grille">
+      <div class="carte">
+        <h3>Préparer sa candidature</h3>
+        <ul>
+          <li>Un CV à jour</li>
+          <li>Un compte <a href="https://github.com/signup" target="_blank" rel="noopener">GitHub</a> qui sert de portfolio : vous pouvez y mettre tous les projets réalisés pendant le master</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>Quand chercher ?</h3>
+        <ul>
+          <li><strong>Alternance</strong> : dès janvier du M1</li>
+          <li><strong>Stage</strong> : dès septembre du M2</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>Livret de stage</h3>
+        <a> (lien)</a>.
+      </div>
+    </div>
+
+    <p style="margin-top:1.5rem"><strong>Pensez au réseau du master</strong> : contactez les anciens étudiants pour demander de l'aide ou des offres de stage et d'alternance.</p>
+  </div>
+</section>
+
+<!-- ===== SECTION : CHECKLIST ===== -->
+<section id="checklist">
+  <div class="conteneur">
+    <h2>Checklist d'arrivée</h2>
+    <p class="intro">Cochez au fur et à mesure : vos cases restent enregistrées dans votre navigateur.</p>
+    <div class="progression"><div id="barre"></div></div>
+
+    <div class="grille">
+      <div class="carte">
+        <h3>Avant l'arrivée</h3>
+        <ul class="checklist">
+          <li><label><input type="checkbox" data-id="cvec"><span>Payer ou valider la CVEC</span></label></li>
+          <li><label><input type="checkbox" data-id="inscription"><span>Faire l'inscription administrative</span></label></li>
+          <li><label><input type="checkbox" data-id="logement"><span>Trouver un logement</span></label></li>
+          <li><label><input type="checkbox" data-id="garant"><span>Préparer un garant (ou Visale)</span></label></li>
+          <li><label><input type="checkbox" data-id="assurance"><span>Souscrire une assurance habitation</span></label></li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>Première semaine</h3>
+        <ul class="checklist">
+          <li><label><input type="checkbox" data-id="caf"><span>Faire la demande d'aide au logement (CAF)</span></label></li>
+          <li><label><input type="checkbox" data-id="citura"><span>Prendre un abonnement Citura</span></label></li>
+          <li><label><input type="checkbox" data-id="carte"><span>Récupérer sa carte étudiante</span></label></li>
+          <li><label><input type="checkbox" data-id="ent"><span>Activer son compte ENT et sa messagerie</span></label></li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>Premier mois</h3>
+        <ul class="checklist">
+          <li><label><input type="checkbox" data-id="ameli"><span>Mettre à jour son adresse sur ameli.fr</span></label></li>
+          <li><label><input type="checkbox" data-id="medecin"><span>Choisir un médecin traitant</span></label></li>
+          <li><label><input type="checkbox" data-id="promo"><span>Rejoindre le groupe de la promo</span></label></li>
+          <li><label><input type="checkbox" data-id="bu"><span>Visiter la BU</span></label></li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:16px"><button id="reinitialiser">Tout décocher</button></p>
+  </div>
+</section>
+
+<!-- ===== SECTION : CONTACTS ===== -->
+<section id="contacts">
+  <div class="conteneur">
+    <h2>Contacts utiles</h2>
+
+    <h3 style="margin-top:1.5rem">Pour la formation</h3>
+    <div class="tableau">
+      <table>
+        <tr><th>Contact</th><th>Rôle</th><th>Coordonnées</th></tr>
+        <tr><td>Emmanuelle Gautherat</td><td>Responsable pédagogique du parcours SEP</td><td><a href="mailto:emmanuelle.gautherat@univ-reims.fr">emmanuelle.gautherat@univ-reims.fr</a></td></tr>
+        <tr><td>Jules Maes</td><td>Responsable pédagogique du parcours SEP</td><td><a href="mailto:jules.maes@univ-reims.fr">jules.maes@univ-reims.fr</a></td></tr>
+        <tr><td>Philippe Regnault</td><td>Responsable pédagogique du parcours SEP</td><td><a href="mailto:philippe.regnault@univ-reims.fr">philippe.regnault@univ-reims.fr</a></td></tr>
+        <tr><td>Manon Desse</td><td>Secrétaire du diplôme en SESG en économie</td><td>Tél : <a href="tel:+33326913845">03 26 91 38 45</a><br><a href="mailto:manon.desse@univ-reims.fr">manon.desse@univ-reims.fr</a></td></tr>
+        <tr><td>UFR Sciences Économiques, Sociales et de Gestion (SESG)</td><td>Secrétariat</td><td>Tél : <a href="tel:+33326913826">03 26 91 38 26</a><br><a href="mailto:info.sesg@univ-reims.fr">info.sesg@univ-reims.fr</a></td></tr>
+        <tr><td>UFR Sciences Exactes et Naturelles</td><td>Secrétariat</td><td>Tél : <a href="tel:+33326913419">03 26 91 34 19</a><br><a href="mailto:scolarite.sciences@univ-reims.fr">scolarite.sciences@univ-reims.fr</a></td></tr>
+      </table>
+    </div>
+
+    <h3 style="margin-top:2rem">Autres</h3>
+    <div class="tableau">
+      <table>
+        <tr><th>Contact</th><th>Adresse</th><th>Coordonnées</th></tr>
+        <tr><td>Assurance Maladie (CPAM)</td><td>4 rue du Ruisselet, 51086 Reims</td><td>Appel gratuit : <a href="tel:3646">3646</a></td></tr>
+        <tr><td>Caisse d'Allocations Familiales (CAF)</td><td>202 rue des Capucins, 51086 Reims</td><td>Appel gratuit : <a href="tel:3230">3230</a></td></tr>
+        <tr><td>Action Logement</td><td>2 place Paul Jamot, 51100 Reims</td><td>Appel : <a href="tel:+33353130059">+33 3 53 13 00 59</a><br><a href="https://www.actionlogement.fr/reims" target="_blank" rel="noopener">actionlogement.fr/reims</a></td></tr>
+        <tr><td>Numéros d'urgence</td><td>15 (Samu) · 17 (Police) · 18 (Pompiers) · 112 (Europe)</td><td><a href="https://www.ameli.fr" target="_blank" rel="noopener">ameli.fr</a><br><a href="https://www.gendarmerie.interieur.gouv.fr/contact/les-numeros-d-urgence" target="_blank" rel="noopener">Liste des numéros d'urgence</a></td></tr>
+        <tr><td>Service de renseignement administratif</td><td></td><td>Appel gratuit : <a href="tel:3939">3939</a></td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===== SECTION : PIED DE PAGE ===== -->
+<footer>
+  <div class="conteneur">
+    Livret réalisé par les étudiants du Master SEP.
+  </div>
+</footer>
+
+<script>
+  // ---- Checklist : mémorise les cases cochées dans le navigateur ----
+  const cases = document.querySelectorAll('.checklist input');
+  const barre = document.getElementById('barre');
+  const CLE = 'livret-sep-checklist';
+
+  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || {}; } catch (e) { return {}; } }
+  function ecrire(etat) { try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) {} }
+  function majBarre() {
+    const faites = [...cases].filter(c => c.checked).length;
+    barre.style.width = (100 * faites / cases.length) + '%';
+  }
+
+  const etat = lire();
+  cases.forEach(c => {
+    c.checked = !!etat[c.dataset.id];
+    c.addEventListener('change', () => { etat[c.dataset.id] = c.checked; ecrire(etat); majBarre(); });
+  });
+  document.getElementById('reinitialiser').addEventListener('click', () => {
+    cases.forEach(c => { c.checked = false; etat[c.dataset.id] = false; });
+    ecrire(etat); majBarre();
+  });
+  majBarre();
+
+  // ---- Navigation : surligne la section visible ----
+  const liens = document.querySelectorAll('nav a');
+  const observateur = new IntersectionObserver(entrees => {
+    entrees.forEach(e => {
+      if (e.isIntersecting) liens.forEach(l => l.classList.toggle('actif', l.getAttribute('href') === '#' + e.target.id));
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('main section').forEach(s => observateur.observe(s));
+</script>
+</body>
+</html>
