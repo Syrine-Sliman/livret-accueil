@@ -1018,7 +1018,7 @@
       POIS.forEach(([id, nom, cat, zone, lat, lng, adr, det]) => {
         const [col, ini] = CAT[cat] || ['#666', '?'];
         const icon = L.divIcon({ className: '', html: `<div class="poi-marker" style="background:${col}">${ini}</div>`, iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -16] });
-        const htmlPopup = `<div style="min-width:200px;font-size:.88rem;line-height:1.45"><span style="display:inline-block;font-size:.72rem;font-weight:600;padding:1px 8px;border-radius:999px;background:${col};color:#fff;margin-bottom:4px">${esc(zone)}</span><br><strong>${esc(nom)}</strong><br><em>${esc(adr)}</em><br>${esc(det)}<br><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat + ',' + lng)}" target="_blank" rel="noopener" style="font-size:.82rem;display:inline-block;margin-top:4px;font-weight:600">Itinéraire &rarr;</a></div>`;
+        const htmlPopup = `<div style="min-width:200px;font-size:.88rem;line-height:1.45"><span style="display:inline-block;font-size:.72rem;font-weight:600;padding:1px 8px;border-radius:999px;background:${col};color:#fff;margin-bottom:4px">${esc(zone)}</span><br><strong>${esc(nom)}</strong><br><em>${esc(adr)}</em><br>${esc(det)}<br><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat + ',' + lng)}" target="_blank" rel="noopener" style="font-size:.82rem;display:inline-block;margin-top:4px;font-weight:600">Itinéraire (Google Maps) &rarr;</a></div>`;
         const m = L.marker([lat, lng], { icon }).addTo(carte).bindPopup(htmlPopup);
         m._cat = cat; marqueurs[id] = m; tousMarqueurs.push(m);
       });
