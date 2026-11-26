@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Livret d'accueil — Master SEP Reims</title>
 <meta name="description" content="Livret d'accueil des nouveaux étudiants du Master Statistique pour l'Évaluation et la Prévision (SEP) de l'Université de Reims Champagne-Ardenne.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   /* ---------- COULEURS (modifiables) ---------- */
   :root {
@@ -17,75 +19,145 @@
     --texte: #1f2430;
     --texte-doux: #5b6272;
     --bord: #e4e0d6;
+    --bleu-doux: rgba(29, 47, 92, 0.08);
+    --or-doux: rgba(201, 162, 74, 0.14);
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --bleu: #8fa8e8; --or: #d9b866; --fond: #14171f; --carte: #1c2030;
       --texte: #e8e9ee; --texte-doux: #a3a9b8; --bord: #2c3245;
+      --bleu-doux: rgba(143, 168, 232, 0.14); --or-doux: rgba(217, 184, 102, 0.16);
     }
   }
 
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-padding-top: 70px; }
-  body { margin: 0; font-family: Inter, system-ui, sans-serif; line-height: 1.6;
-         background: var(--fond); color: var(--texte); }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  body { margin: 0; font-family: Inter, system-ui, sans-serif; line-height: 1.6; background: var(--fond); color: var(--texte); }
   h1, h2, h3 { font-family: Fraunces, Georgia, serif; line-height: 1.2; }
   h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); color: var(--bleu); margin: 0 0 .4rem; }
   h3 { font-size: 1.15rem; margin: 0 0 .5rem; }
   a { color: var(--bleu); }
   .conteneur { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
+  section { padding: 56px 0; border-bottom: 1px solid var(--bord); }
+  .intro { color: var(--texte-doux); margin: 0 0 1.8rem; max-width: 680px; }
 
-  /* En-tête */
   header { background: #1d2f5c; color: #fff; padding: 64px 0 48px; }
   header .surtitre { color: #d9b866; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: .8rem; }
   header h1 { font-size: clamp(2rem, 6vw, 3.2rem); margin: .3rem 0 1rem; }
   header p { max-width: 640px; opacity: .9; margin: 0; }
 
-  /* Navigation */
   nav { position: sticky; top: 0; z-index: 10; background: var(--carte); border-bottom: 1px solid var(--bord); }
-  nav ul { display: flex; gap: 4px; list-style: none; margin: 0 auto; padding: 8px 16px; max-width: 1000px; overflow-x: auto; }
-  nav a { display: block; padding: 8px 14px; border-radius: 999px; text-decoration: none; color: var(--texte-doux); font-weight: 500; white-space: nowrap; }
+  .nav-inner { display: flex; align-items: center; gap: 10px; max-width: 1260px; margin: 0 auto; padding: 0 16px; }
+  nav ul { display: flex; gap: 2px; list-style: none; margin: 0; padding: 8px 0; overflow-x: auto; flex: 1; min-width: 0; }
+  nav a { display: block; padding: 6px 8px; border-radius: 999px; text-decoration: none; color: var(--texte-doux); font-weight: 500; font-size: .84rem; white-space: nowrap; }
   nav a.actif, nav a:hover { background: var(--bleu); color: var(--carte); }
+  .nav-progress { font-size: .78rem; font-weight: 600; color: var(--or); white-space: nowrap; }
+  .nav-search { font: inherit; font-size: .82rem; padding: 5px 10px; border: 1px solid var(--bord); border-radius: 999px; width: 136px; background: var(--fond); color: var(--texte); }
+  @media (max-width: 600px) { .nav-search { width: 104px; font-size: .78rem; } }
 
-  section { padding: 56px 0; border-bottom: 1px solid var(--bord); }
-  .intro { color: var(--texte-doux); margin: 0 0 1.8rem; max-width: 680px; }
-
-  .grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-  .carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 12px; padding: 20px; }
+  .grille, .grille-3, .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 16px; }
+  .grille-3 { grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); }
+  .plans { grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); margin-bottom: 1.8rem; }
+  .carte, details, .resume-express { background: var(--carte); border: 1px solid var(--bord); border-radius: 12px; padding: 20px; }
   .carte ul { padding-left: 1.1rem; margin: .3rem 0 0; }
   .chiffre { font-family: Fraunces, serif; font-size: 2rem; color: var(--or); font-weight: 700; }
+  .carte-mise-en-avant { border-left: 4px solid var(--or); margin-bottom: 16px; }
 
-  .plans { display: grid; gap: 16px; margin-bottom: 1.8rem; }
   .plans figure { margin: 0; }
-  .plans img { display: block; width: 100%; height: auto; border-radius: 8px; }
+  .plans img { display: block; width: 100%; height: auto; border-radius: 8px; cursor: pointer; }
   .plans figcaption { margin-top: .6rem; font-weight: 600; text-align: center; }
+  .plans .reperes { font-size: .82rem; color: var(--texte-doux); text-align: center; margin-top: 2px; }
+  .plans .plan-btns { display: flex; justify-content: center; margin-top: 8px; }
 
-  details { background: var(--carte); border: 1px solid var(--bord); border-radius: 12px; padding: 14px 20px; margin-bottom: 10px; }
+  details { padding: 14px 20px; margin-bottom: 10px; }
   summary { cursor: pointer; font-weight: 600; }
   details[open] summary { margin-bottom: .6rem; }
 
-  /* Checklist */
+  button { font: inherit; background: none; border: 1px solid var(--bord); color: var(--texte-doux); border-radius: 8px; padding: 6px 14px; cursor: pointer; }
+  .plan-btns button, .btn-carte-lien, .filtres-carte button, .search-status-actions button { font-size: .82rem; padding: 4px 12px; border-radius: 999px; color: var(--bleu); background: var(--carte); }
+  .btn-carte-lien { margin-top: 4px; }
+  .btn-carte-lien:hover, .filtres-carte button.actif, .filtres-carte button:hover, .btn-copier:hover { background: var(--bleu); color: var(--carte); border-color: var(--bleu); }
+  .btn-copier { font-size: .78rem; padding: 2px 8px; margin-left: 6px; border-radius: 6px; color: var(--bleu); background: var(--carte); }
+
+  .badge { display: inline-block; font-size: .75rem; font-weight: 600; padding: 2px 10px; border-radius: 999px; margin: 0 6px 6px 0; }
+  .badge-cr { background: var(--bleu-doux); color: var(--bleu); }
+  .badge-mdlh { background: var(--or-doux); color: var(--texte); border: 1px solid var(--or); }
+  .badge-bonplan { background: var(--bleu); color: var(--carte); }
+  .astuce { background: var(--or-doux); border-left: 4px solid var(--or); border-radius: 0 10px 10px 0; padding: 14px 18px; margin-top: 1rem; }
+  .astuce strong { color: var(--bleu); }
+  .encart-infos { background: var(--fond); border: 1px solid var(--bord); border-radius: 10px; padding: 14px 18px; margin-top: 1rem; font-size: .92rem; }
+
+  .filtres-carte { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .filtres-carte button { color: var(--texte-doux); }
+  #map { height: 460px; border: 1px solid var(--bord); border-radius: 12px; z-index: 1; }
+  @media (max-width: 768px) { #map { height: 360px; } }
+  .map-fallback { display: flex; align-items: center; justify-content: center; height: 100%; background: var(--carte); border-radius: 12px; color: var(--texte-doux); text-align: center; padding: 20px; }
+  .poi-marker { width: 28px; height: 28px; border-radius: 50%; border: 3px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+
   .progression { height: 10px; background: var(--bord); border-radius: 999px; overflow: hidden; margin: 8px 0 24px; }
   .progression div { height: 100%; width: 0; background: var(--or); transition: width .3s; }
+  .compteur-checklist { font-size: .95rem; color: var(--texte-doux); margin: 0 0 4px; }
   .checklist { list-style: none; padding: 0; margin: 0; }
   .checklist li { padding: 6px 0; }
   .checklist label { display: flex; gap: 10px; cursor: pointer; }
   .checklist input { margin-top: 5px; accent-color: var(--bleu); }
   .checklist input:checked + span { text-decoration: line-through; color: var(--texte-doux); }
-  button { font: inherit; background: none; border: 1px solid var(--bord); color: var(--texte-doux); border-radius: 8px; padding: 6px 14px; cursor: pointer; }
+
+  .timeline { display: flex; flex-direction: column; }
+  .timeline-phase { display: flex; gap: 16px; }
+  .timeline-dot-line { display: flex; flex-direction: column; align-items: center; min-width: 24px; }
+  .timeline-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--or); border: 3px solid var(--fond); box-shadow: 0 0 0 2px var(--or); flex-shrink: 0; }
+  .timeline-line { width: 2px; flex: 1; background: var(--bord); }
+  .timeline-phase:last-child .timeline-line { display: none; }
+  .timeline-content { flex: 1; padding-bottom: 20px; }
 
   table { width: 100%; border-collapse: collapse; background: var(--carte); border-radius: 12px; overflow: hidden; }
   th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--bord); vertical-align: top; }
   th { background: var(--bleu); color: var(--carte); }
   .tableau { overflow-x: auto; }
-
+  .tableau table { min-width: 580px; }
   footer { padding: 32px 0; color: var(--texte-doux); font-size: .9rem; }
 
+  .section-resume { padding: 16px 0; border: none; }
+  .resume-express { padding: 0; margin: 0; overflow: hidden; }
+  .resume-express summary { padding: 14px 20px; font-family: Fraunces, Georgia, serif; color: var(--bleu); font-size: 1.05rem; }
+  .resume-express .pills { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 20px 16px; }
+  .resume-express .pills a { padding: 6px 16px; border-radius: 999px; background: var(--bleu); color: var(--carte); text-decoration: none; font-size: .88rem; font-weight: 500; }
+
+  .btn-top { position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px; border-radius: 50%; background: var(--bleu); color: var(--carte); border: none; font-size: 1.2rem; z-index: 50; display: none; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .btn-top.visible { display: flex; }
+
+  .search-highlight { background: rgba(201, 162, 74, 0.42); color: inherit; border-radius: 2px; }
+  .search-highlight-active { background: var(--or); color: #14171f; }
+  .search-hidden, .lightbox[hidden], .search-status[hidden] { display: none !important; }
+  .search-status { max-width: 1000px; margin: 16px auto 0; padding: 10px 16px; background: var(--carte); border: 1px solid var(--bord); border-left: 4px solid var(--or); border-radius: 10px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; font-size: .9rem; }
+  .search-status-actions { display: flex; gap: 6px; }
+
+  .lightbox { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.85); display: flex; flex-direction: column; }
+  .lightbox-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: rgba(0,0,0,.6); color: #fff; flex-wrap: wrap; }
+  .lightbox-bar button, .lightbox-bar a { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); color: #fff; padding: 4px 12px; border-radius: 6px; font-size: .85rem; text-decoration: none; }
+  #lightbox-titre { flex: 1; font-weight: 600; font-size: .95rem; }
+  .lightbox-body { flex: 1; overflow: auto; padding: 16px; }
+  .lightbox-body img { display: block; margin: 0 auto; max-width: none; transition: width .2s; }
+
+  .anim-ready .anim-entree { opacity: 0; transform: translateY(20px); transition: opacity .5s ease-out, transform .5s ease-out; }
+  .anim-ready .anim-entree.anim-visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .anim-ready .anim-entree, .anim-entree { opacity: 1 !important; transform: none !important; transition: none !important; }
+  }
+
   @media print {
-    nav, button { display: none; }
+    :root { --bleu: #1d2f5c; --or: #c9a24a; --fond: #ffffff; --carte: #ffffff; --texte: #1f2430; --texte-doux: #5b6272; --bord: #d8d4ca; }
+    nav, button, .plan-btns, .filtres-carte, #carte-reims, .lightbox, .btn-carte-lien, .btn-copier, .btn-top, .section-resume, .search-status { display: none !important; }
+    .anim-ready .anim-entree, .anim-entree { opacity: 1 !important; transform: none !important; }
+    .search-hidden { display: block !important; }
+    .search-highlight, .search-highlight-active { background: transparent !important; color: inherit !important; }
     header { padding: 24px 0; }
-    section { page-break-inside: avoid; padding: 24px 0; }
-    details { border: none; } details > * { display: block; }
+    section { padding: 20px 0; }
+    thead { display: table-header-group; }
+    .carte, .timeline-phase, .astuce, tr, figure { break-inside: avoid; }
+    details { border: none; padding: 8px 0; }
   }
 </style>
 </head>
@@ -102,24 +174,49 @@
   </div>
 </header>
 
-<nav>
-  <ul>
-    <li><a href="#master">Le master</a></li>
-    <li><a href="#installer">S'installer</a></li>
-    <li><a href="#campus">Campus</a></li>
-    <li><a href="#prerequis">Prérequis</a></li>
-    <li><a href="#logiciels">Logiciels</a></li>
-    <li><a href="#materiel">Matériel</a></li>
-    <li><a href="#infos">Infos utiles</a></li>
-    <li><a href="#checklist">Checklist</a></li>
-    <li><a href="#contacts">Contacts</a></li>
-  </ul>
+<!-- ===== RÉSUMÉ  ===== -->
+<div class="section-resume">
+  <div class="conteneur">
+    <details class="resume-express" open>
+      <summary>Accès rapide</summary>
+      <div class="pills">
+        <a href="#installer">Logement</a>
+        <a href="#transports">Transports</a>
+        <a href="#checklist">Checklist</a>
+        <a href="#logiciels">Logiciels</a>
+        <a href="#contacts">Contacts</a>
+      </div>
+    </details>
+  </div>
+</div>
+
+<nav aria-label="Navigation principale">
+  <div class="nav-inner">
+    <ul id="nav-links">
+      <li><a href="#master">Le master</a></li>
+      <li><a href="#installer">S'installer</a></li>
+      <li><a href="#transports">Transports</a></li>
+      <li><a href="#campus">Campus</a></li>
+      <li><a href="#manger">Restauration</a></li>
+      <li><a href="#sport">Sport</a></li>
+      <li><a href="#vie-reims">Vie à Reims</a></li>
+      <li><a href="#prerequis">Prérequis</a></li>
+      <li><a href="#logiciels">Logiciels</a></li>
+      <li><a href="#materiel">Matériel</a></li>
+      <li><a href="#infos">Infos utiles</a></li>
+      <li><a href="#checklist">Checklist</a></li>
+      <li><a href="#contacts">Contacts</a></li>
+    </ul>
+    <span class="nav-progress" id="nav-progress" title="Checklist">0/17</span>
+    <input type="search" class="nav-search" id="nav-search" placeholder="Rechercher…" aria-label="Rechercher dans le livret">
+  </div>
 </nav>
 
 <main>
+<div style="padding:0 16px"><div id="search-status" class="search-status" role="status" aria-live="polite" hidden></div></div>
 
 <!-- ===== SECTION : LE MASTER ===== -->
-<section id="master">
+<section id="master" class="anim-entree">
   <div class="conteneur">
     <h2>Le master</h2>
     <p class="intro">Le master SEP réunit des étudiants venus des mathématiques et de l'économie (APE).
@@ -141,7 +238,7 @@
 </section>
 
 <!-- ===== SECTION : S'INSTALLER À REIMS ===== -->
-<section id="installer">
+<section id="installer" class="anim-entree">
   <div class="conteneur">
     <h2>S'installer à Reims</h2>
     <p class="intro">Le logement part vite : commencez vos recherches dès l'admission confirmée, idéalement avant l'été.</p>
@@ -165,114 +262,367 @@
         <li><strong>Secteurs conseillés</strong> : centre-ville, Clairmarais, Jean-Jaurès, Cernay, Saint-Remi, Courlancy.</li>
         <li><strong>Garant</strong> : si vous n'en avez pas, la garantie <a href="https://www.visale.fr" target="_blank" rel="noopener">Visale</a> est gratuite.</li>
       </ul>
+      <div class="astuce">
+        <strong>Accès aux deux campus :</strong> Les cours ont lieu à Croix-Rouge et à Moulin de la Housse. Le centre-ville permet de rejoindre les deux campus via le Tram T1/T2 et le Bus O1.
+      </div>
     </details>
 
     <details>
       <summary>Aides financières</summary>
       <ul>
         <li><strong>Aide au logement (APL/ALS)</strong> : simulation et demande sur <a href="https://www.caf.fr" target="_blank" rel="noopener">caf.fr</a>, à faire dès la signature du bail.</li>
-        <li><strong>Bourse Crous</strong> : dossier social étudiant sur messervices.etudiant.gouv.fr.</li>
+        <li><strong>Bourse Crous</strong> : dossier social étudiant sur <a href="https://www.messervices.etudiant.gouv.fr" target="_blank" rel="noopener">messervices.etudiant.gouv.fr</a>.</li>
         <li><strong>CVEC</strong> : à acquitter avant l'inscription sur <a href="https://cvec.etudiant.gouv.fr" target="_blank" rel="noopener">cvec.etudiant.gouv.fr</a> (exonération pour les boursiers).</li>
+        <li><strong>Mobili-Jeune</strong> : jusqu'à 100 €/mois d'aide au loyer pour les moins de 30 ans en alternance, sur <a href="https://mobilijeune.actionlogement.fr/" target="_blank" rel="noopener">mobilijeune.actionlogement.fr</a>.</li>
+        <li><strong>Aide spécifique ponctuelle du CROUS</strong> : en cas de difficulté financière, prise de rendez-vous avec une assistante sociale sur <a href="https://www.messervices.etudiant.gouv.fr" target="_blank" rel="noopener">messervices.etudiant.gouv.fr</a>.</li>
       </ul>
     </details>
 
     <details>
       <summary>Se déplacer</summary>
       <ul>
-        <li>Réseau de bus et tram : <a href="https://grandreims-mobilites.fr/" target="_blank" rel="noopener">Citura</a> (tarifs étudiants disponibles).</li>
+        <li>Réseau de bus et tram : <a href="https://grandreims-mobilites.fr/" target="_blank" rel="noopener">Grand Reims Mobilités</a> (tarifs étudiants disponibles).</li>
+        <li>Titres, tarifs et lignes : voir la section <a href="#transports">Transports &amp; Mobilité</a>.</li>
+      </ul>
     </details>
 
     <details>
       <summary>Santé et vie quotidienne</summary>
       <ul>
         <li>Mettez à jour votre adresse auprès de l'Assurance maladie (<a href="https://www.ameli.fr" target="_blank" rel="noopener">ameli.fr</a>) et déclarez un médecin traitant à Reims.</li>
-        <li>Service de santé étudiant: SSE Bâtiment 20 campus Croix-Rouge et SUMPPS campus Moulin de la Housse.</li>
+        <li><strong>Services du SSE</strong> : consultations médicales, infirmières, psychologues, gynécologie, diététique, vaccinations et certificats sportifs, sans avance de frais sur présentation de la carte étudiante.
+          <ul>
+            <li>Campus Croix-Rouge : Bâtiment 20.</li>
+            <li>Campus Moulin de la Housse : Bâtiment 8.</li>
+            <li>Accueil du lundi au vendredi, 8h30–17h30 · Tél. <a href="tel:+33326918320">03 26 91 83 20</a>.</li>
+          </ul>
+        </li>
+        <li><strong>Nightline Reims</strong> : écoute étudiante gratuite et anonyme tous les soirs de 20h30 à 2h30 au <a href="tel:+33359615582">03 59 61 55 82</a> ou sur <a href="https://www.nightline.fr/reims" target="_blank" rel="noopener">nightline.fr/reims</a>.</li>
+        <li><strong>CHU Robert Debré</strong> : urgences hospitalières, terminus du Tram T1.</li>
+        <li><strong>Mission Handicap URCA</strong> : <a href="https://www.univ-reims.fr/vie-des-campus/handicap/contacts-et-prise-de-rendez-vous/contacts-et-prise-de-rendez-vous,11331,34484.html" target="_blank" rel="noopener">Contacts et prise de rendez-vous</a>.</li>
       </ul>
     </details>
   </div>
 </section>
 
-<!-- ===== SECTION : CAMPUS ET VIE ÉTUDIANTE ===== -->
-<section id="campus">
+<!-- ===== SECTION : TRANSPORTS & MOBILITÉ ===== -->
+<section id="transports" class="anim-entree">
   <div class="conteneur">
-    <h2>Campus et vie étudiante</h2>
-    <p class="intro">Les cours ont lieu sur les deux campus: campus Croix-Rouge, 57 rue Pierre Taittinger, 51100 Reims et campus Moulin de la Housse, Chem. des Rouliers, 51100 Reims.</p>
-
-    <div class="plans">
-      <figure class="carte">
-        <a href="images/plan-croix-rouge.png" target="_blank"><img src="images/plan-croix-rouge.png" alt="Plan du campus Croix-Rouge"></a>
-        <figcaption>Campus Croix-Rouge</figcaption>
-      </figure>
-      <figure class="carte">
-        <a href="images/plan-moulin-de-la-housse.png" target="_blank"><img src="images/plan-moulin-de-la-housse.png" alt="Plan du campus Moulin de la Housse"></a>
-        <figcaption>Campus Moulin de la Housse</figcaption>
-      </figure>
-    </div>
+    <h2>Transports &amp; Mobilité</h2>
+    <p class="intro">Le réseau de transport de Reims est Grand Reims Mobilités. Retrouvez les points de vente, les tarifs étudiants et les lignes desservant les deux campus.</p>
 
     <div class="grille">
       <div class="carte">
-        <h3>Étudier</h3>
+        <h3>Créer et recharger sa carte</h3>
+        <p><strong>Maison des Mobilités</strong> : guichet principal sur le parvis de la Gare de Reims Centre pour créer une carte Grand R ou souscrire un abonnement.</p>
+        <p><em>Pièces à fournir</em> : pièce d'identité, photo d'identité récente, justificatif de domicile de moins de 3 mois, certificat de scolarité URCA et moyen de paiement.</p>
+        <button type="button" class="btn-carte-lien" data-poi="maison-mobilites">Voir sur la carte</button>
+        <div class="astuce" style="margin-top:12px">
+          <strong>Carte étudiante URCA</strong> : l'abonnement Grand Reims Mobilités peut être chargé sur votre carte Multiservices URCA.
+        </div>
+        <p style="margin-top:10px"><strong>Application KIF&amp;GO</strong> : achat des titres et abonnements sur smartphone.</p>
+        <p><strong>Rechargement</strong> : distributeurs automatiques aux arrêts de tramway, application KIF&amp;GO.</p>
+      </div>
+      <div class="carte">
+        <h3>Tarifs 18–25 ans</h3>
         <ul>
-          <li>Bibliothèques universitaires (<a href="https://www.univ-reims.fr/bu" target="_blank" rel="noopener">horaires et services</a>) :
-            <ul>
-              <li>BU Robert de Sorbon, campus Croix-Rouge</li>
-              <li>BU Moulin de la Housse, campus Moulin de la Housse</li>
-              <li>BU Santé, 51 rue Cognacq-Jay</li>
-              <li>BU Reims Éducation (INSPÉ)</li>
-            </ul></li>
-          <li>Impression et scan disponibles dans les BU, payables avec Izly</li>
-          <li>Médiathèques de la ville (<a href="https://www.bm-reims.fr" target="_blank" rel="noopener">bm-reims.fr</a>) :
-            <ul>
-              <li>Médiathèque Jean Falala, 2 rue des Fuseliers</li>
-              <li>Médiathèque Croix-Rouge, 19 rue Jean-Louis Debar</li>
-              <li>Médiathèque Laon-Zola, 2 rue de la Neuvillette</li>
-              <li>Bibliothèque Carnegie, 2 place Carnegie</li>
-              <li>Bibliothèque Saint-Remi, 19 esplanade des Capucins</li>
-              <li>Bibliothèque Chemin Vert, 12 avenue de l'Yser</li>
-            </ul></li>
+          <li><strong>MobiPass Illimité mensuel</strong> : <strong>20 €/mois</strong>, voyages illimités pendant 30 jours sur les lignes bus et tram.</li>
+          <li><strong>MobiPass Illimité annuel</strong> : <strong>200 €/an</strong>, mensualisation possible.</li>
+        </ul>
+        <p>Tarifs officiels : <a href="https://grandreims-mobilites.fr/" target="_blank" rel="noopener">grandreims-mobilites.fr</a>.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:2rem">Lignes de transport du Master SEP</h3>
+    <div class="tableau">
+      <table>
+        <thead><tr><th>Trajet</th><th>Lignes</th><th>Arrêt</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Vers Campus Croix-Rouge</strong></td><td>Tram <strong>T1</strong>, Tram <strong>T2</strong>, Bus <strong>U5</strong></td><td><em>Campus Croix-Rouge</em></td></tr>
+          <tr><td><strong>Vers Campus Moulin de la Housse</strong></td><td>Bus <strong>O1</strong>, Bus <strong>U5</strong></td><td><em>Moulin de la Housse</em> / <em>IUT</em></td></tr>
+          <tr><td><strong>Transition entre les deux campus</strong></td><td>Tram <strong>T1</strong> / <strong>T2</strong> + Bus <strong>O1</strong></td><td><em>Correspondance au centre-ville</em></td></tr>
+          <tr><td><strong>Trajets de nuit</strong></td><td><strong>TAD de Nuit</strong> sur <strong>MyMobi</strong></td><td>Arrêts du réseau</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grille" style="margin-top:16px">
+      <div class="carte">
+        <h3>Vélo</h3>
+        <ul>
+          <li><strong>Zébullo</strong> : vélos électriques en libre-service dans Reims, avec tarif étudiant.</li>
+          <li><strong>Location longue durée</strong> : vélos classiques ou électriques au mois ou à l'année via Grand Reims Mobilités.</li>
+          <li><strong>Pistes cyclables</strong> : liaisons entre le centre-ville et les deux campus.</li>
         </ul>
       </div>
       <div class="carte">
-        <h3>Associations</h3>
-    <p>Liste complète dans l'<a href="https://www.univ-reims.fr/media-files/78376/annuaire_associationsetudiantes_2026.2027-2-.pdf" target="_blank" rel="noopener">annuaire des associations étudiantes de l'URCA</a>.</p>
+        <h3>Trains et TGV</h3>
+        <ul>
+          <li><strong>Gare de Reims Centre</strong> : TGV vers Paris Gare de l'Est en 45 min et réseau TER Grand Est.</li>
+          <li><strong>Gare Champagne-Ardenne TGV</strong> : liaisons directes nationales et accès direct par le Tram T2 depuis Croix-Rouge.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION : CAMPUS ET VIE ÉTUDIANTE ===== -->
+<section id="campus" class="anim-entree">
+  <div class="conteneur">
+    <h2>Campus et vie étudiante</h2>
+    <p class="intro">Les cours ont lieu sur les deux campus : campus Croix-Rouge, 57 rue Pierre Taittinger, 51100 Reims et campus Moulin de la Housse, Chem. des Rouliers, 51100 Reims.</p>
+
+    <div class="plans">
+      <figure class="carte">
+        <img src="images/plan-croix-rouge.png" alt="Plan du campus Croix-Rouge" data-lightbox-src="images/plan-croix-rouge.png">
+        <figcaption>Campus Croix-Rouge</figcaption>
+        <div class="reperes">UFR SESG · BU Robert de Sorbon · RU Prost · SSE Bât. 20 · Tram T1/T2</div>
+        <div class="plan-btns">
+          <button type="button" data-lightbox-src="images/plan-croix-rouge.png" data-lightbox-alt="Plan du campus Croix-Rouge">Agrandir / Zoomer</button>
+        </div>
+      </figure>
+      <figure class="carte">
+        <img src="images/plan-moulin-de-la-housse.png" alt="Plan du campus Moulin de la Housse" data-lightbox-src="images/plan-moulin-de-la-housse.png">
+        <figcaption>Campus Moulin de la Housse</figcaption>
+        <div class="reperes">UFR Sciences · BU Moulin de la Housse · RU &amp; Cafet Sciences · SSE Bât. 8 · SUAPS · Bus O1</div>
+        <div class="plan-btns">
+          <button type="button" data-lightbox-src="images/plan-moulin-de-la-housse.png" data-lightbox-alt="Plan du campus Moulin de la Housse">Agrandir / Zoomer</button>
+        </div>
+      </figure>
+    </div>
+
+    <!-- Carte interactive -->
+    <div id="carte-reims">
+      <h3>Carte interactive</h3>
+      <p style="color:var(--texte-doux);font-size:.92rem;margin:0 0 10px">Filtrez par catégorie ou sélectionnez un point pour consulter les informations et l'itinéraire.</p>
+      <div class="filtres-carte">
+        <button type="button" class="actif" data-filtre="all">Tout afficher</button>
+        <button type="button" data-filtre="campus">Campus</button>
+        <button type="button" data-filtre="manger">Restauration</button>
+        <button type="button" data-filtre="bu">Bibliothèques</button>
+        <button type="button" data-filtre="sport">Sport</button>
+        <button type="button" data-filtre="transports">Transports</button>
+        <button type="button" data-filtre="sante-vie">Santé &amp; Culture</button>
+      </div>
+      <div id="map"></div>
+    </div>
+
+    <div class="carte" style="margin-top:24px">
+      <h3>Étudier</h3>
+      <ul>
+        <li>Bibliothèques universitaires (<a href="https://www.univ-reims.fr/bu/bibliotheques/horaires/horaires,26974,44324.html" target="_blank" rel="noopener">Horaires</a>) :
+          <ul>
+            <li>BU Robert de Sorbon, campus Croix-Rouge</li>
+            <li>BU Moulin de la Housse, campus Moulin de la Housse</li>
+            <li>BU Santé, 51 rue Cognacq-Jay</li>
+            <li>BU Reims Éducation (INSPÉ)</li>
+          </ul></li>
+        <li>Impression et scan disponibles dans les BU, payables avec Izly</li>
+        <li>Médiathèques de la ville (<a href="https://www.bm-reims.fr/Default/horaires.aspx" target="_blank" rel="noopener">Horaires - Bibliothèques de Reims</a>) :
+          <ul>
+            <li>Médiathèque Jean Falala, 2 rue des Fuseliers</li>
+            <li>Médiathèque Croix-Rouge, 19 rue Jean-Louis Debar</li>
+            <li>Médiathèque Laon-Zola, 2 rue de la Neuvillette</li>
+            <li>Bibliothèque Carnegie, 2 place Carnegie</li>
+            <li>Bibliothèque Saint-Remi, 19 esplanade des Capucins</li>
+            <li>Bibliothèque Chemin Vert, 12 avenue de l'Yser</li>
+          </ul></li>
+      </ul>
+      <div class="encart-infos">
+        <strong>Horaires des BU des deux campus :</strong>
+        <ul style="margin:.4rem 0 .4rem 1rem">
+          <li><em>BU Robert de Sorbon</em>, Croix-Rouge : Lun–Ven <strong>8h–20h</strong>, Sam <strong>9h–19h</strong> <button type="button" class="btn-carte-lien" data-poi="bu-sorbon">Voir sur la carte</button></li>
+          <li><em>BU Moulin de la Housse</em> : Lun–Ven <strong>8h–20h</strong> <button type="button" class="btn-carte-lien" data-poi="bu-mdlh">Voir sur la carte</button></li>
+        </ul>
+        <p style="margin:.4rem 0"><strong>Salles de groupe</strong> : réservation sur <a href="https://affluences.com/fr/sites/bu-robert-de-sorbon-reims" target="_blank" rel="noopener">BU Robert de Sorbon — Affluences</a> et <a href="https://affluences.com/fr/sites/bu-moulin-de-la-housse-reims" target="_blank" rel="noopener">BU Moulin de la Housse — Affluences</a>.</p>
+        <p style="margin:.4rem 0"><strong>Médiathèques</strong> : inscription gratuite pour les étudiants.</p>
+      </div>
+    </div>
+
+    <div class="carte" style="margin-top:16px">
+      <h3>Associations</h3>
+      <p>Liste complète dans l'<a href="https://www.univ-reims.fr/media-files/78376/annuaire_associationsetudiantes_2026.2027-2-.pdf" target="_blank" rel="noopener">annuaire des associations étudiantes de l'URCA</a>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION : RESTAURATION ===== -->
+<section id="manger" class="anim-entree">
+  <div class="conteneur">
+    <h2>Restauration</h2>
+    <p class="intro">Restauration universitaire sur les deux campus et solutions pour les courses.</p>
+
+    <div class="astuce">
+      <strong>Tarif CROUS à 1 € et compte Izly</strong><br>
+      Le repas complet est accessible à 1 € pour tous les étudiants dans les restaurants universitaires CROUS.<br>
+      <strong>Compte Izly</strong> : à activer dès réception du mail à la rentrée sur <a href="https://www.izly.fr/" target="_blank" rel="noopener">izly.fr</a>. Il permet le paiement avec l'application ou la carte étudiante URCA et sert aux impressions en BU.
+    </div>
+
+    <div class="grille" style="margin-top:16px">
+      <div class="carte">
+        <h3>Campus Croix-Rouge</h3>
+        <span class="badge badge-cr">Croix-Rouge</span>
+        <p><strong>RU Jean-Charles Prost</strong></p>
+        <ul>
+          <li>Self : <strong>11h15 – 13h45</strong></li>
+          <li>Cafétéria : <strong>7h00 – 16h00</strong>, samedi 8h30 – 14h00</li>
+          <li>Pizzeria : service du midi</li>
+        </ul>
+        <button type="button" class="btn-carte-lien" data-poi="ru-prost">Voir sur la carte</button>
+        <hr style="border:none;border-top:1px solid var(--bord);margin:12px 0">
+        <p><strong>RU Paul Fort</strong></p>
+        <span class="badge badge-bonplan">Ouvert le soir</span>
+        <ul>
+          <li>Midi : <strong>11h30 – 13h45</strong></li>
+          <li>Soir : <strong>18h45 – 20h00</strong>, du lundi au jeudi</li>
+        </ul>
+        <button type="button" class="btn-carte-lien" data-poi="ru-paul-fort">Voir sur la carte</button>
+      </div>
+      <div class="carte">
+        <h3>Campus Moulin de la Housse</h3>
+        <span class="badge badge-mdlh">Moulin de la Housse</span>
+        <p><strong>RU Moulin de la Housse</strong> : <strong>11h30 – 13h45</strong></p>
+        <button type="button" class="btn-carte-lien" data-poi="ru-mdlh">Voir sur la carte</button>
+        <p style="margin-top:10px"><strong>Cafétéria Moulin de la Housse</strong> : <strong>11h30 – 14h00</strong></p>
+        <p><strong>Cafétéria des Sciences</strong> : <strong>8h00 – 16h00</strong></p>
+        <button type="button" class="btn-carte-lien" data-poi="cafet-sciences">Voir sur la carte</button>
+        <p style="margin-top:10px"><strong>Cafétéria IUT</strong> : <strong>7h00 – 15h45</strong></p>
+      </div>
+    </div>
+
+    <div class="carte" style="margin-top:16px">
+      <h3>Courses et marchés</h3>
+      <ul>
+        <li><strong>Marché du Boulingrin</strong> : centre-ville, mercredi, vendredi et samedi.</li>
+        <li><strong>Application anti-gaspillage</strong> : Too Good To Go.</li>
+        <li><strong>Grandes surfaces</strong> : zone commerciale de Cormontreuil et supermarchés à Croix-Rouge et au centre-ville.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION : SPORT ===== -->
+<section id="sport" class="anim-entree">
+  <div class="conteneur">
+    <h2>Sport</h2>
+    <p class="intro">Pratique sportive universitaire avec le SUAPS et salles de sport à proximité des campus.</p>
+
+    <div class="carte carte-mise-en-avant">
+      <h3>SUAPS de l'URCA</h3>
+      <span class="badge badge-mdlh">Moulin de la Housse</span>
+      <span class="badge badge-bonplan">Tarif étudiant</span>
+      <p><strong>Lieu</strong> : Gymnase universitaire de Moulin de la Housse et installations de la ville.</p>
+      <p><strong>Activités</strong> : musculation, cardio, sports collectifs, escalade, natation, raquettes et cours de remise en forme.</p>
+      <p><strong>Inscription</strong> : dès la rentrée sur <a href="https://www.univ-reims.fr/vie-des-campus/sport-suaps/" target="_blank" rel="noopener">univ-reims.fr/sport-suaps</a> · Tél. <a href="tel:+33326913417">03 26 91 34 17</a>.</p>
+      <button type="button" class="btn-carte-lien" data-poi="suaps">Voir sur la carte</button>
+    </div>
+
+    <h3>Salles de sport</h3>
+    <div class="grille-3">
+      <div class="carte">
+        <h3>Campus Croix-Rouge</h3>
+        <span class="badge badge-cr">Croix-Rouge</span>
+        <ul>
+          <li><strong>Basic-Fit Pierre Taittinger</strong> : à proximité du campus, Lun–Ven 6h–22h30, Sam–Dim 9h–19h.
+            <br><button type="button" class="btn-carte-lien" data-poi="basicfit-taittinger">Voir sur la carte</button></li>
+          <li><strong>GIGAFIT Reims Sud</strong> : 7j/7 de 6h à 23h.
+            <br><button type="button" class="btn-carte-lien" data-poi="gigafit">Voir sur la carte</button></li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>Campus Moulin de la Housse</h3>
+        <span class="badge badge-mdlh">Moulin de la Housse</span>
+        <ul>
+          <li><strong>GYM K Reims Farman</strong> : musculation, cardio, cours collectifs et squash.
+            <br><button type="button" class="btn-carte-lien" data-poi="gymk-farman">Voir sur la carte</button></li>
+          <li><strong>Zone de Cormontreuil</strong> : ON AIR Fitness, Fitness Park et Basic-Fit.
+            <br><button type="button" class="btn-carte-lien" data-poi="onair-cormontreuil">Voir sur la carte</button></li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>Centre-ville</h3>
+        <span class="badge badge-bonplan">Centre-ville</span>
+        <ul>
+          <li><strong>Basic-Fit Rue de Vesle</strong> : sur l'axe du Tram T1/T2, Lun–Ven 6h–22h30, Sam–Dim 9h–19h.
+            <br><button type="button" class="btn-carte-lien" data-poi="basicfit-vesle">Voir sur la carte</button></li>
+          <li><strong>GYM K Reims Courcelles</strong> : secteur Gare / Clairmarais, Lun–Ven 6h–21h30.</li>
+          <li><strong>UCPA Sport Station Grand Reims</strong> : piscine, fitness, escalade, squash, padel et patinoire, tarifs étudiants.
+            <br><button type="button" class="btn-carte-lien" data-poi="ucpa">Voir sur la carte</button></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="astuce" style="margin-top:16px">
+      <strong>Sport en plein air</strong><br>
+      <strong>Parc de Champagne</strong> : proche du campus Moulin de la Housse, espace vert en accès libre pour la course à pied et le sport en extérieur. <button type="button" class="btn-carte-lien" data-poi="parc-champagne">Voir sur la carte</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION : VIE À REIMS & OUTILS URCA ===== -->
+<section id="vie-reims" class="anim-entree">
+  <div class="conteneur">
+    <h2>Vie à Reims et outils URCA</h2>
+    <p class="intro">Lieux culturels et services numériques de l'université.</p>
+
+    <div class="grille">
+      <div class="carte">
+        <h3>Culture et sorties</h3>
+        <ul>
+          <li><strong>Place Drouet d'Erlon</strong> : secteur piéton du centre-ville desservi par le Tram T1/T2. <button type="button" class="btn-carte-lien" data-poi="erlon">Voir sur la carte</button></li>
+          <li><strong>La Cartonnerie</strong> : salle de concerts avec tarifs étudiants sur <a href="https://www.cartonnerie.fr/" target="_blank" rel="noopener">cartonnerie.fr</a>. <button type="button" class="btn-carte-lien" data-poi="cartonnerie">Voir sur la carte</button></li>
+          <li><strong>Cinéma Opéraims</strong> : cinéma du centre-ville avec tarifs étudiants.</li>
+          <li><strong>Cathédrale Notre-Dame de Reims</strong> : accès libre.</li>
+          <li><strong>Musées municipaux</strong> : gratuité pour les étudiants de moins de 26 ans.</li>
+          <li><strong>SUAC</strong> : ateliers et billetterie culturelle universitaire sur <a href="https://www.univ-reims.fr/vie-des-campus/culture/" target="_blank" rel="noopener">univ-reims.fr/vie-des-campus/culture</a>.</li>
+          <li><strong>Comédie et Opéra de Reims</strong> : tarifs réduits étudiants et éligibilité Pass Culture.</li>
+        </ul>
+      </div>
+      <div class="carte">
+        <h3>Outils numériques URCA</h3>
+        <ul>
+          <li><strong>ENT URCA</strong> : notes, attestations, messagerie et emploi du temps sur <a href="https://ebureau.univ-reims.fr" target="_blank" rel="noopener">ebureau.univ-reims.fr</a>.</li>
+          <li><strong>Moodle</strong> : supports de cours, jeux de données et dépôts de travaux.</li>
+          <li><strong>Wi-Fi <code>eduroam</code></strong> : réseau sans fil des deux campus accessible avec vos identifiants URCA.</li>
+          <li><strong>Application URCA</strong> : consultation de l'emploi du temps et des salles sur <a href="https://play.google.com/store/apps/details?id=fr.univreims.mobile.urca" target="_blank" rel="noopener">Google Play</a> et <a href="https://apps.apple.com/fr/app/application-urca/id6745270991" target="_blank" rel="noopener">App Store</a>.</li>
+          <li><strong>Microsoft 365</strong> : suite Office accessible gratuitement avec l'adresse <code>@etudiant.univ-reims.fr</code>.</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- ===== SECTION : PRÉREQUIS ===== -->
-<section id="prerequis">
+<section id="prerequis" class="anim-entree">
   <div class="conteneur">
     <h2>Prérequis des cours</h2>
     <div class="grille">
       <div class="carte">
-        <h3>M1 parcours maths</h3>
-        <a>Voir les prérequis (lien datacamp)</a>
-      </div>
-      <div class="carte">
-        <h3>M1 parcours APE</h3>
-        <a>Voir les prérequis (lien datacamp)</a>
+        <h3>M1</h3>
+        <a href="https://mastersep.github.io/DataCamp_SEP_2023_2024/M1SEP.html" target="_blank" rel="noopener">DATA Camp M1 – SEP Guide</a>
       </div>
       <div class="carte">
         <h3>M2</h3>
-        <a>Voir les prérequis (lien datacamp)</a>
+        <a href="https://mastersep.github.io/DataCamp_SEP_2023_2024/M2SEP.html" target="_blank" rel="noopener">DATA Camp M2 – SEP Guide</a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ===== SECTION : LOGICIELS ===== -->
-<section id="logiciels">
+<section id="logiciels" class="anim-entree">
   <div class="conteneur">
     <h2>Logiciels à installer</h2>
     <p class="intro">Installez ces logiciels avant la rentrée. Les étapes dépendent de votre système (Windows, macOS ou Linux).</p>
 
     <h3>Pour les maths</h3>
     <details>
-      <summary>MATLAB</summary>
-      <p>Logiciel de calcul numérique et de programmation scientifique.</p>
+      <summary>GNU Octave</summary>
+      <p>Logiciel libre de calcul numérique et de programmation scientifique.</p>
       <ul>
-        <li><strong>Windows, macOS, Linux</strong> : créez un compte MathWorks puis téléchargez l'installateur sur
-          <a href="https://www.mathworks.com/downloads/" target="_blank" rel="noopener">mathworks.com/downloads</a>.</li>
-        <li><strong>Sans installation</strong> : <a href="https://matlab.mathworks.com" target="_blank" rel="noopener">MATLAB Online</a>, dans le navigateur.</li>
+        <li><strong>Windows, macOS, Linux</strong> : téléchargez l'installateur ou consultez les instructions sur
+          <a href="https://octave.org/download" target="_blank" rel="noopener">octave.org/download</a>.</li>
+        <li><strong>Sans installation</strong> : <a href="https://octave-online.net/" target="_blank" rel="noopener">Octave Online</a>, dans le navigateur.</li>
       </ul>
     </details>
 
@@ -332,10 +682,10 @@
           </ol></li>
         <li><strong>macOS et Linux</strong> : Git Bash n'est pas nécessaire, le Terminal (bash ou zsh) accepte les mêmes commandes.
           Installez Git depuis <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">git-scm.com/downloads</a>,
-          puis choisissez nano comme éditeur : <code>git config --global core.editor "nano"</code></li>
+          puis choisissez nano comme éditeur : <code>git config --global core.editor "nano"</code> <button type="button" class="btn-copier" data-copie='git config --global core.editor "nano"'>Copier</button></li>
         <li><strong>Configuration (tout le monde)</strong> : dans le terminal, tapez
-          <br><code>git config --global user.name "Prénom Nom"</code>
-          <br><code>git config --global user.email "mon.adresse@mail.com"</code></li>
+          <br><code>git config --global user.name "Prénom Nom"</code> <button type="button" class="btn-copier" data-copie='git config --global user.name "Prénom Nom"'>Copier</button>
+          <br><code>git config --global user.email "mon.adresse@mail.com"</code> <button type="button" class="btn-copier" data-copie='git config --global user.email "mon.adresse@mail.com"'>Copier</button></li>
         <li><strong>GitLab de l'URCA</strong> : les projets du master sont hébergés sur le serveur GitLab des départements de maths et d'informatique
           (<a href="https://gitlab-mi.univ-reims.fr" target="_blank" rel="noopener">gitlab-mi.univ-reims.fr</a>).
           Connectez-vous une première fois avec vos identifiants de l'université (CAS).</li>
@@ -375,7 +725,7 @@
 </section>
 
 <!-- ===== SECTION : MATÉRIEL ===== -->
-<section id="materiel">
+<section id="materiel" class="anim-entree">
   <div class="conteneur">
     <h2>Matériel</h2>
     <div class="grille">
@@ -386,7 +736,7 @@
       <div class="carte">
         <h3>Pas d'ordinateur ?</h3>
         Les BU prêtent des ordinateurs portables. Faites la demande dès la rentrée : le nombre d'ordinateurs est limité.
-        <a href="https://www.univ-reims.fr/bu/accueil/et-si-vous-empruntiez-un-portable-a-la-bu-pour-travailler-partout,9200,44036.html" target="_blank" rel="noopener">Voir les conditions d'emprunt</a>
+        <a href="https://www.univ-reims.fr/bu/services/emprunter/emprunter,27166,44406.html" target="_blank" rel="noopener">Voir les conditions d'emprunt</a>
       </div>
       <div class="carte">
         <h3>Caméra et micro</h3>
@@ -397,7 +747,7 @@
 </section>
 
 <!-- ===== SECTION : INFOS UTILES ===== -->
-<section id="infos">
+<section id="infos" class="anim-entree">
   <div class="conteneur">
     <h2>Infos utiles</h2>
 
@@ -424,77 +774,113 @@
     </div>
 
     <p style="margin-top:1.5rem"><strong>Pensez au réseau du master</strong> : contactez les anciens étudiants pour demander de l'aide ou des offres de stage et d'alternance.</p>
+
+    <div class="astuce">
+      <strong>Alternants de M2 :</strong> l'aide Mobili-Jeune, les APL et la Prime d'activité sont cumulables sous conditions de ressources. Le Career Center de l'URCA propose également des offres.
+    </div>
   </div>
 </section>
 
 <!-- ===== SECTION : CHECKLIST ===== -->
-<section id="checklist">
+<section id="checklist" class="anim-entree">
   <div class="conteneur">
     <h2>Checklist d'arrivée</h2>
     <p class="intro">Cochez au fur et à mesure : vos cases restent enregistrées dans votre navigateur.</p>
+    <p class="compteur-checklist"><strong id="compteur-faites">0</strong> / <span id="compteur-total">17</span> étapes validées · <span id="compteur-pct">0</span> %</p>
     <div class="progression"><div id="barre"></div></div>
 
-    <div class="grille">
-      <div class="carte">
-        <h3>Avant l'arrivée</h3>
-        <ul class="checklist">
-          <li><label><input type="checkbox" data-id="cvec"><span>Payer ou valider la CVEC</span></label></li>
-          <li><label><input type="checkbox" data-id="inscription"><span>Faire l'inscription administrative</span></label></li>
-          <li><label><input type="checkbox" data-id="logement"><span>Trouver un logement</span></label></li>
-          <li><label><input type="checkbox" data-id="garant"><span>Préparer un garant (ou Visale)</span></label></li>
-          <li><label><input type="checkbox" data-id="assurance"><span>Souscrire une assurance habitation</span></label></li>
-        </ul>
+    <div class="timeline">
+      <!-- Avant l'arrivée -->
+      <div class="timeline-phase">
+        <div class="timeline-dot-line"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+        <div class="timeline-content">
+          <div class="carte">
+            <h3>Avant l'arrivée</h3>
+            <ul class="checklist">
+              <li><label><input type="checkbox" data-id="cvec"><span>Payer ou valider la CVEC</span></label></li>
+              <li><label><input type="checkbox" data-id="inscription"><span>Faire l'inscription administrative</span></label></li>
+              <li><label><input type="checkbox" data-id="logement"><span>Trouver un logement</span></label></li>
+              <li><label><input type="checkbox" data-id="garant"><span>Préparer un garant (ou Visale)</span></label></li>
+              <li><label><input type="checkbox" data-id="assurance"><span>Souscrire une assurance habitation</span></label></li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div class="carte">
-        <h3>Première semaine</h3>
-        <ul class="checklist">
-          <li><label><input type="checkbox" data-id="caf"><span>Faire la demande d'aide au logement (CAF)</span></label></li>
-          <li><label><input type="checkbox" data-id="citura"><span>Prendre un abonnement Citura</span></label></li>
-          <li><label><input type="checkbox" data-id="carte"><span>Récupérer sa carte étudiante</span></label></li>
-          <li><label><input type="checkbox" data-id="ent"><span>Activer son compte ENT et sa messagerie</span></label></li>
-        </ul>
+      <!-- Première semaine -->
+      <div class="timeline-phase">
+        <div class="timeline-dot-line"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+        <div class="timeline-content">
+          <div class="carte">
+            <h3>Première semaine</h3>
+            <ul class="checklist">
+              <li><label><input type="checkbox" data-id="caf"><span>Faire la demande d'aide au logement (CAF)</span></label></li>
+              <li><label><input type="checkbox" data-id="citura"><span>Prendre un abonnement Grand Reims Mobilités</span></label></li>
+              <li><label><input type="checkbox" data-id="carte"><span>Récupérer sa carte étudiante</span></label></li>
+              <li><label><input type="checkbox" data-id="ent"><span>Activer son compte ENT et sa messagerie</span></label></li>
+              <li><label><input type="checkbox" data-id="izly"><span>Activer et recharger son compte Izly pour le RU et la BU</span></label></li>
+              <li><label><input type="checkbox" data-id="eduroam"><span>Configurer le Wi-Fi eduroam et l'application URCA</span></label></li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div class="carte">
-        <h3>Premier mois</h3>
-        <ul class="checklist">
-          <li><label><input type="checkbox" data-id="ameli"><span>Mettre à jour son adresse sur ameli.fr</span></label></li>
-          <li><label><input type="checkbox" data-id="medecin"><span>Choisir un médecin traitant</span></label></li>
-          <li><label><input type="checkbox" data-id="promo"><span>Rejoindre le groupe de la promo</span></label></li>
-          <li><label><input type="checkbox" data-id="bu"><span>Visiter la BU</span></label></li>
-        </ul>
+      <!-- Premier mois -->
+      <div class="timeline-phase">
+        <div class="timeline-dot-line"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+        <div class="timeline-content">
+          <div class="carte">
+            <h3>Premier mois</h3>
+            <ul class="checklist">
+              <li><label><input type="checkbox" data-id="ameli"><span>Mettre à jour son adresse sur ameli.fr</span></label></li>
+              <li><label><input type="checkbox" data-id="medecin"><span>Choisir un médecin traitant</span></label></li>
+              <li><label><input type="checkbox" data-id="promo"><span>Rejoindre le groupe de la promo</span></label></li>
+              <li><label><input type="checkbox" data-id="bu"><span>Visiter la BU</span></label></li>
+              <li><label><input type="checkbox" data-id="sport"><span>S'inscrire au SUAPS ou en salle de sport</span></label></li>
+              <li><label><input type="checkbox" data-id="logiciels"><span>Installer les logiciels du master et activer son accès GitLab URCA</span></label></li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
-    <p style="margin-top:16px"><button id="reinitialiser">Tout décocher</button></p>
+
+    <p style="margin-top:16px"><button id="reinitialiser" type="button">Tout décocher</button></p>
   </div>
 </section>
 
 <!-- ===== SECTION : CONTACTS ===== -->
-<section id="contacts">
+<section id="contacts" class="anim-entree">
   <div class="conteneur">
     <h2>Contacts utiles</h2>
 
     <h3 style="margin-top:1.5rem">Pour la formation</h3>
     <div class="tableau">
       <table>
-        <tr><th>Contact</th><th>Rôle</th><th>Coordonnées</th></tr>
-        <tr><td>Emmanuelle Gautherat</td><td>Responsable pédagogique du parcours SEP</td><td><a href="mailto:emmanuelle.gautherat@univ-reims.fr">emmanuelle.gautherat@univ-reims.fr</a></td></tr>
-        <tr><td>Jules Maes</td><td>Responsable pédagogique du parcours SEP</td><td><a href="mailto:jules.maes@univ-reims.fr">jules.maes@univ-reims.fr</a></td></tr>
-        <tr><td>Philippe Regnault</td><td>Responsable pédagogique du parcours SEP</td><td><a href="mailto:philippe.regnault@univ-reims.fr">philippe.regnault@univ-reims.fr</a></td></tr>
-        <tr><td>Manon Desse</td><td>Secrétaire du diplôme en SESG en économie</td><td>Tél : <a href="tel:+33326913845">03 26 91 38 45</a><br><a href="mailto:manon.desse@univ-reims.fr">manon.desse@univ-reims.fr</a></td></tr>
-        <tr><td>UFR Sciences Économiques, Sociales et de Gestion (SESG)</td><td>Secrétariat</td><td>Tél : <a href="tel:+33326913826">03 26 91 38 26</a><br><a href="mailto:info.sesg@univ-reims.fr">info.sesg@univ-reims.fr</a></td></tr>
-        <tr><td>UFR Sciences Exactes et Naturelles</td><td>Secrétariat</td><td>Tél : <a href="tel:+33326913419">03 26 91 34 19</a><br><a href="mailto:scolarite.sciences@univ-reims.fr">scolarite.sciences@univ-reims.fr</a></td></tr>
+        <thead><tr><th>Contact</th><th>Rôle</th><th>Coordonnées</th></tr></thead>
+        <tbody>
+          <tr><td>Emmanuelle Gautherat</td><td>Responsable pédagogique du parcours SEP</td><td><a href="mailto:emmanuelle.gautherat@univ-reims.fr">emmanuelle.gautherat@univ-reims.fr</a></td></tr>
+          <tr><td>Jules Maes</td><td>Responsable pédagogique du parcours SEP</td><td><a href="mailto:jules.maes@univ-reims.fr">jules.maes@univ-reims.fr</a></td></tr>
+          <tr><td>Philippe Regnault</td><td>Responsable pédagogique du parcours SEP</td><td><a href="mailto:philippe.regnault@univ-reims.fr">philippe.regnault@univ-reims.fr</a></td></tr>
+          <tr><td>Manon Desse</td><td>Secrétaire du diplôme (UFR SESG)</td><td>Tél : <a href="tel:+33326913845">03 26 91 38 45</a><br><a href="mailto:manon.desse@univ-reims.fr">manon.desse@univ-reims.fr</a></td></tr>
+          <tr><td>UFR Sciences Économiques, Sociales et de Gestion (SESG)</td><td>Secrétariat</td><td>Tél : <a href="tel:+33326913826">03 26 91 38 26</a><br><a href="mailto:info.sesg@univ-reims.fr">info.sesg@univ-reims.fr</a></td></tr>
+          <tr><td>UFR Sciences Exactes et Naturelles</td><td>Secrétariat</td><td>Tél : <a href="tel:+33326913419">03 26 91 34 19</a><br><a href="mailto:scolarite.sciences@univ-reims.fr">scolarite.sciences@univ-reims.fr</a></td></tr>
+        </tbody>
       </table>
     </div>
 
     <h3 style="margin-top:2rem">Autres</h3>
     <div class="tableau">
       <table>
-        <tr><th>Contact</th><th>Adresse</th><th>Coordonnées</th></tr>
-        <tr><td>Assurance Maladie (CPAM)</td><td>4 rue du Ruisselet, 51086 Reims</td><td>Appel gratuit : <a href="tel:3646">3646</a></td></tr>
-        <tr><td>Caisse d'Allocations Familiales (CAF)</td><td>202 rue des Capucins, 51086 Reims</td><td>Appel gratuit : <a href="tel:3230">3230</a></td></tr>
-        <tr><td>Action Logement</td><td>2 place Paul Jamot, 51100 Reims</td><td>Appel : <a href="tel:+33353130059">+33 3 53 13 00 59</a><br><a href="https://www.actionlogement.fr/reims" target="_blank" rel="noopener">actionlogement.fr/reims</a></td></tr>
-        <tr><td>Numéros d'urgence</td><td>15 (Samu) · 17 (Police) · 18 (Pompiers) · 112 (Europe)</td><td><a href="https://www.ameli.fr" target="_blank" rel="noopener">ameli.fr</a><br><a href="https://www.gendarmerie.interieur.gouv.fr/contact/les-numeros-d-urgence" target="_blank" rel="noopener">Liste des numéros d'urgence</a></td></tr>
-        <tr><td>Service de renseignement administratif</td><td></td><td>Appel gratuit : <a href="tel:3939">3939</a></td></tr>
+        <thead><tr><th>Contact</th><th>Adresse</th><th>Coordonnées</th></tr></thead>
+        <tbody>
+          <tr><td>Assurance Maladie (CPAM)</td><td>4 rue du Ruisselet, 51086 Reims</td><td>Appel gratuit : <a href="tel:3646">3646</a></td></tr>
+          <tr><td>Caisse d'Allocations Familiales (CAF)</td><td>202 rue des Capucins, 51086 Reims</td><td>Appel gratuit : <a href="tel:3230">3230</a></td></tr>
+          <tr><td>Action Logement</td><td>2 place Paul Jamot, 51100 Reims</td><td>Appel : <a href="tel:+33353130059">+33 3 53 13 00 59</a><br><a href="https://www.actionlogement.fr/reims" target="_blank" rel="noopener">actionlogement.fr/reims</a></td></tr>
+          <tr><td>Numéros d'urgence</td><td>15 (Samu) · 17 (Police) · 18 (Pompiers) · 112 (Europe)</td><td><a href="https://www.gendarmerie.interieur.gouv.fr/contact/les-numeros-d-urgence" target="_blank" rel="noopener">Liste des numéros d'urgence</a></td></tr>
+          <tr><td>Service de renseignement administratif</td><td></td><td>Appel gratuit : <a href="tel:3939">3939</a></td></tr>
+          <tr><td>Maison des Mobilités</td><td>28 A boulevard Joffre, 51100 Reims</td><td><a href="https://grandreims-mobilites.fr/" target="_blank" rel="noopener">grandreims-mobilites.fr</a></td></tr>
+          <tr><td>CROUS de Reims</td><td>14 bis allée des Landais, 51100 Reims</td><td><a href="https://www.crous-reims.fr/" target="_blank" rel="noopener">crous-reims.fr</a></td></tr>
+          <tr><td>SSE — Santé Étudiante URCA</td><td>Croix-Rouge, Bât. 20 · Moulin de la Housse, Bât. 8</td><td>Tél : <a href="tel:+33326918320">03 26 91 83 20</a><br>Lun–Ven 8h30–17h30</td></tr>
+          <tr><td>Nightline Reims</td><td>Écoute étudiante gratuite et anonyme, 20h30 – 2h30</td><td>Tél : <a href="tel:+33359615582">03 59 61 55 82</a><br><a href="https://www.nightline.fr/reims" target="_blank" rel="noopener">nightline.fr/reims</a></td></tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -509,38 +895,270 @@
   </div>
 </footer>
 
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-labelledby="lightbox-titre">
+  <div class="lightbox-bar">
+    <span id="lightbox-titre"></span>
+    <button id="lb-zoom-out" type="button" aria-label="Dézoomer">−</button>
+    <span id="lb-zoom-level">100 %</span>
+    <button id="lb-zoom-in" type="button" aria-label="Zoomer">+</button>
+    <button id="lb-reset" type="button">Réinitialiser</button>
+    <a id="lb-fullscreen" href="#" target="_blank" rel="noopener">Ouvrir en plein écran</a>
+    <button id="lb-close" type="button" aria-label="Fermer la visionneuse">×</button>
+  </div>
+  <div class="lightbox-body" id="lightbox-body">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+</div>
+
+<!-- Back to top button -->
+<button class="btn-top" id="btn-top" type="button" aria-label="Retour en haut">↑</button>
+
 <script>
-  // ---- Checklist : mémorise les cases cochées dans le navigateur ----
-  const cases = document.querySelectorAll('.checklist input');
-  const barre = document.getElementById('barre');
-  const CLE = 'livret-sep-checklist';
+(() => {
+  'use strict';
+  const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches, beh = reduced ? 'auto' : 'smooth';
 
-  function lire() { try { return JSON.parse(localStorage.getItem(CLE)) || {}; } catch (e) { return {}; } }
-  function ecrire(etat) { try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) {} }
-  function majBarre() {
-    const faites = [...cases].filter(c => c.checked).length;
-    barre.style.width = (100 * faites / cases.length) + '%';
-  }
+  // Impression : ouvre les <details> puis restaure
+  let printOpen = [];
+  addEventListener('beforeprint', () => { if (!printOpen.length) printOpen = [...$$('main details')].map(d => [d, d.open, d.open = true]); });
+  addEventListener('afterprint', () => { printOpen.forEach(([d, was]) => d.open = was); printOpen = []; });
 
+  // Navigation active + retour en haut
+  const navUl = $('#nav-links'), liens = $$('#nav-links a'), btnTop = $('#btn-top');
+  const activer = id => liens.forEach(l => {
+    const on = l.getAttribute('href') === '#' + id;
+    l.classList.toggle('actif', on);
+    if (on && navUl.scrollWidth > navUl.clientWidth) {
+      const u = navUl.getBoundingClientRect(), r = l.getBoundingClientRect();
+      navUl.scrollTo({ left: Math.max(0, navUl.scrollLeft + r.left - u.left - (u.width - r.width) / 2), behavior: beh });
+    }
+  });
+  const obsNav = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && activer(e.target.id)), { rootMargin: '-40% 0px -55% 0px' });
+  $$('main section').forEach(s => obsNav.observe(s));
+  addEventListener('scroll', () => {
+    const v = [...$$('main > section')].filter(s => !s.classList.contains('search-hidden'));
+    if (v.length) scrollY < 80 ? activer(v[0].id) : scrollY + innerHeight >= document.documentElement.scrollHeight - 24 && activer(v[v.length - 1].id);
+    if (btnTop) btnTop.classList.toggle('visible', scrollY > 600);
+  }, { passive: true });
+  if (btnTop) btnTop.onclick = () => scrollTo({ top: 0, behavior: beh });
+
+  // Lightbox plans
+  const lb = $('#lightbox'), lbImg = $('#lightbox-img');
+  let zoom = 100, lastFocus = null;
+  const majZoom = z => { zoom = Math.min(250, Math.max(100, z)); lbImg.style.width = zoom + '%'; $('#lb-zoom-level').textContent = zoom + ' %'; };
+  const fermerLb = () => { lb.hidden = true; document.body.style.overflow = ''; lastFocus?.focus?.(); lastFocus = null; };
+  $$('[data-lightbox-src]').forEach(el => el.onclick = e => {
+    e.preventDefault(); lastFocus = document.activeElement;
+    lbImg.src = el.dataset.lightboxSrc;
+    lbImg.alt = $('#lightbox-titre').textContent = el.dataset.lightboxAlt || el.alt || '';
+    $('#lb-fullscreen').href = el.dataset.lightboxSrc;
+    majZoom(100); $('#lightbox-body').scrollTo(0, 0); lb.hidden = false; document.body.style.overflow = 'hidden'; $('#lb-close').focus();
+  });
+  $('#lb-zoom-in').onclick = () => majZoom(zoom + 25);
+  $('#lb-zoom-out').onclick = () => majZoom(zoom - 25);
+  $('#lb-reset').onclick = () => majZoom(100);
+  $('#lb-close').onclick = fermerLb;
+  $('#lightbox-body').onclick = e => e.target === e.currentTarget && fermerLb();
+  document.addEventListener('keydown', e => {
+    if (lb.hidden) return;
+    if (e.key === 'Escape') fermerLb();
+    else if (e.key === '+' || e.key === '=') majZoom(zoom + 25);
+    else if (e.key === '-') majZoom(zoom - 25);
+    else if (e.key === '0') majZoom(100);
+  });
+
+  // Carte interactive Leaflet
+  const POIS = [
+    ['campus-cr', 'Campus Croix-Rouge', 'campus', 'Croix-Rouge', 49.2367, 4.0033, '57 rue Pierre Taittinger', 'UFR SESG · Tram T1, T2 · Bus U5'],
+    ['campus-mdlh', 'Campus Moulin de la Housse', 'campus', 'Moulin de la Housse', 49.2419, 4.0604, 'Chemin des Rouliers', 'UFR Sciences · Bus O1 · Bus U5'],
+    ['ru-prost', 'RU Jean-Charles Prost', 'manger', 'Croix-Rouge', 49.2355, 4.0055, 'Rue Rilly-la-Montagne', 'Repas 1 € · 11h15–13h45 · Cafétéria & Pizzeria'],
+    ['ru-paul-fort', 'RU Paul Fort', 'manger', 'Croix-Rouge', 49.2398, 4.0112, '8 Bd Franchet d\'Esperey', 'Repas 1 € · 11h30–13h45 · Soir Lun–Jeu 18h45–20h'],
+    ['ru-mdlh', 'RU Moulin de la Housse', 'manger', 'Moulin de la Housse', 49.2427, 4.0628, '4 Chemin des Rouliers', 'Repas 1 € · 11h30–13h45'],
+    ['cafet-sciences', 'Cafétéria des Sciences', 'manger', 'Moulin de la Housse', 49.2430, 4.0605, 'Campus Moulin de la Housse', '8h00–16h00'],
+    ['cafet-iut', 'Cafétéria IUT Reims', 'manger', 'Moulin de la Housse', 49.2408, 4.0630, 'Chemin des Rouliers', '7h00–15h45'],
+    ['bu-sorbon', 'BU Robert de Sorbon', 'bu', 'Croix-Rouge', 49.2369, 4.0052, 'Campus Croix-Rouge', 'Lun–Ven 8h–20h · Sam 9h–19h · Izly'],
+    ['bu-mdlh', 'BU Moulin de la Housse', 'bu', 'Moulin de la Housse', 49.2435, 4.0615, 'Chemin des Rouliers', 'Lun–Ven 8h–20h · Salles de groupe'],
+    ['mediatheque-falala', 'Médiathèque Jean Falala', 'bu', 'Centre-ville', 49.2535, 4.0315, '2 rue des Fuseliers', 'Inscription gratuite pour les étudiants'],
+    ['bib-carnegie', 'Bibliothèque Carnegie', 'bu', 'Centre-ville', 49.2531, 4.0357, '2 place Carnegie', 'Inscription gratuite pour les étudiants'],
+    ['mediatheque-cr', 'Médiathèque Croix-Rouge', 'bu', 'Croix-Rouge', 49.2345, 4.0110, '19 rue Jean-Louis Debar', 'Inscription gratuite pour les étudiants'],
+    ['suaps', 'SUAPS', 'sport', 'Moulin de la Housse', 49.2448, 4.0638, 'Chemin des Rouliers', 'Gymnase universitaire · Tarif étudiant'],
+    ['basicfit-taittinger', 'Basic-Fit Pierre Taittinger', 'sport', 'Croix-Rouge', 49.2402, 4.0056, '2 rue Pierre Taittinger', 'Lun–Ven 6h–22h30 · Sam–Dim 9h–19h'],
+    ['gigafit', 'GIGAFIT Reims Sud', 'sport', 'Croix-Rouge', 49.2252, 4.0145, '8 Allée du Vignoble', '6h–23h 7j/7'],
+    ['gymk-farman', 'GYM K Reims Farman', 'sport', 'Moulin de la Housse', 49.2378, 4.0655, '10 rue Gabriel Voisin', 'Musculation, cardio & squash'],
+    ['onair-cormontreuil', 'Zone sport Cormontreuil', 'sport', 'Cormontreuil', 49.2255, 4.0580, 'Rue des Blancs Monts / Av. des Goisses', 'ON AIR Fitness · Fitness Park · Basic-Fit'],
+    ['basicfit-vesle', 'Basic-Fit Rue de Vesle', 'sport', 'Centre-ville', 49.2533, 4.0277, '106 rue de Vesle', 'Tram T1, T2'],
+    ['ucpa', 'UCPA Sport Station Grand Reims', 'sport', 'Centre-ville', 49.2602, 4.0273, '5 Bd Jules César', 'Piscine, fitness, escalade, squash, padel, patinoire'],
+    ['parc-champagne', 'Parc de Champagne', 'sport', 'Moulin de la Housse', 49.2422, 4.0505, '10 Av. du Général Giraud', 'Course à pied et sport en plein air'],
+    ['maison-mobilites', 'Maison des Mobilités & Gare Centre', 'transports', 'Centre-ville', 49.2588, 4.0246, '28 A boulevard Joffre', 'Carte Grand R · TGV Paris 45 min'],
+    ['gare-tgv', 'Gare Champagne-Ardenne TGV', 'transports', 'Bezannes', 49.2148, 3.9945, 'Parc d\'Affaires Bezannes', 'Accès direct par Tram T2'],
+    ['sse-cr', 'SSE Santé Étudiante — Croix-Rouge', 'sante-vie', 'Croix-Rouge', 49.2360, 4.0020, 'Bât. 20, Campus Croix-Rouge', 'Sans avance de frais · 03 26 91 83 20'],
+    ['sse-mdlh', 'SSE Santé Étudiante — Moulin de la Housse', 'sante-vie', 'Moulin de la Housse', 49.2425, 4.0595, 'Bât. 8, Campus Moulin de la Housse', 'Sans avance de frais · 03 26 91 83 20'],
+    ['chu-debre', 'CHU Robert Debré', 'sante-vie', 'Croix-Rouge', 49.2292, 4.0175, 'Rue du Général Koenig', 'Urgences · Terminus Tram T1'],
+    ['erlon', 'Place Drouet d\'Erlon & Cinéma Opéraims', 'sante-vie', 'Centre-ville', 49.2561, 4.0266, 'Place Drouet d\'Erlon', 'Centre-ville · Tram T1, T2'],
+    ['cartonnerie', 'La Cartonnerie', 'sante-vie', 'Centre-ville', 49.2640, 4.0418, '84 rue du Dr Lemoine', 'Salle de concerts · Tarifs étudiants']
+  ];
+  const CAT = { campus: ['#1d2f5c','C'], manger: ['#d97706','R'], bu: ['#6d28d9','B'], sport: ['#059669','S'], transports: ['#0284c7','T'], 'sante-vie': ['#be123c','+'] };
+  const mapDiv = $('#map'), marqueurs = {}, tousMarqueurs = [], fallbackMsg = '<div class="map-fallback">Carte interactive indisponible hors connexion. Les deux plans de campus ci-dessus restent consultables.</div>';
+  let carte = null;
+
+  if (typeof L !== 'undefined' && mapDiv) {
+    try {
+      carte = L.map('map', { center: [49.2475, 4.0310], zoom: 13, minZoom: 11, maxZoom: 18, scrollWheelZoom: false });
+      const tiles = L.tileLayer('https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', {
+        maxZoom: 18, maxNativeZoom: 18, tileSize: 256,
+        attribution: 'Données &copy; <a href="https://cartes.gouv.fr/" target="_blank" rel="noopener">IGN / Géoplateforme</a> · <a href="https://www.data.gouv.fr/fr/pages/legal/licences/etalab-2-0/" target="_blank" rel="noopener">Licence Ouverte 2.0</a>'
+      });
+      let ok = 0, err = 0;
+      tiles.on('tileload', () => ok++).on('tileerror', () => {
+        if (++err >= 4 && !ok && carte) { carte.remove(); carte = null; mapDiv.innerHTML = fallbackMsg; }
+      }).addTo(carte);
+      carte.on('click', () => carte.scrollWheelZoom.enable()).on('mouseout', () => carte.scrollWheelZoom.disable());
+      POIS.forEach(([id, nom, cat, zone, lat, lng, adr, det]) => {
+        const [col, ini] = CAT[cat] || ['#666', '?'];
+        const icon = L.divIcon({ className: '', html: `<div class="poi-marker" style="background:${col}">${ini}</div>`, iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -16] });
+        const htmlPopup = `<div style="min-width:200px;font-size:.88rem;line-height:1.45"><span style="display:inline-block;font-size:.72rem;font-weight:600;padding:1px 8px;border-radius:999px;background:${col};color:#fff;margin-bottom:4px">${esc(zone)}</span><br><strong>${esc(nom)}</strong><br><em>${esc(adr)}</em><br>${esc(det)}<br><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat + ',' + lng)}" target="_blank" rel="noopener" style="font-size:.82rem;display:inline-block;margin-top:4px;font-weight:600">Itinéraire &rarr;</a></div>`;
+        const m = L.marker([lat, lng], { icon }).addTo(carte).bindPopup(htmlPopup);
+        m._cat = cat; marqueurs[id] = m; tousMarqueurs.push(m);
+      });
+    } catch { mapDiv.innerHTML = fallbackMsg; }
+  } else if (mapDiv) mapDiv.innerHTML = fallbackMsg;
+
+  $$('.filtres-carte button').forEach(btn => btn.onclick = () => {
+    $$('.filtres-carte button').forEach(b => b.classList.remove('actif'));
+    btn.classList.add('actif');
+    if (!carte) return;
+    const f = btn.dataset.filtre, bounds = [];
+    tousMarqueurs.forEach(m => (f === 'all' || m._cat === f) ? (carte.addLayer(m), bounds.push(m.getLatLng())) : carte.removeLayer(m));
+    if (bounds.length) carte.fitBounds(bounds, { padding: [35, 35], maxZoom: 15, animate: !reduced });
+  });
+
+  // Copier commandes Git
+  const copier = (t, ok) => {
+    const fb = () => {
+      const ta = Object.assign(document.createElement('textarea'), { value: t, readOnly: true });
+      ta.style.cssText = 'position:fixed;top:-9999px'; document.body.appendChild(ta); ta.select();
+      try { if (document.execCommand('copy')) ok(); } catch {} ta.remove();
+    };
+    if (navigator.clipboard && isSecureContext && location.protocol !== 'file:') navigator.clipboard.writeText(t).then(ok).catch(fb);
+    else fb();
+  };
+  $$('.btn-copier[data-copie]').forEach(btn => {
+    const orig = btn.textContent;
+    btn.onclick = () => copier(btn.dataset.copie, () => { clearTimeout(btn._t); btn.textContent = 'Copié !'; btn._t = setTimeout(() => btn.textContent = orig, 1500); });
+  });
+
+  // Checklist
+  const cases = $$('.checklist input'), CLE = 'livret-sep-checklist';
+  const lire = () => { try { return JSON.parse(localStorage.getItem(CLE)) || {}; } catch { return {}; } };
+  const ecrire = e => { try { localStorage.setItem(CLE, JSON.stringify(e)); } catch {} };
+  const majBarre = () => {
+    const n = [...cases].filter(c => c.checked).length, tot = cases.length, pct = tot ? Math.round(100 * n / tot) : 0;
+    $('#barre').style.width = pct + '%';
+    $('#compteur-faites').textContent = n; $('#compteur-total').textContent = tot; $('#compteur-pct').textContent = pct;
+    $('#nav-progress').textContent = n + '/' + tot;
+  };
   const etat = lire();
-  cases.forEach(c => {
-    c.checked = !!etat[c.dataset.id];
-    c.addEventListener('change', () => { etat[c.dataset.id] = c.checked; ecrire(etat); majBarre(); });
-  });
-  document.getElementById('reinitialiser').addEventListener('click', () => {
-    cases.forEach(c => { c.checked = false; etat[c.dataset.id] = false; });
-    ecrire(etat); majBarre();
-  });
+  cases.forEach(c => { c.checked = !!etat[c.dataset.id]; c.onchange = () => { etat[c.dataset.id] = c.checked; ecrire(etat); majBarre(); }; });
+  $('#reinitialiser').onclick = () => { cases.forEach(c => { c.checked = false; etat[c.dataset.id] = false; }); ecrire(etat); majBarre(); };
   majBarre();
 
-  // ---- Navigation : surligne la section visible ----
-  const liens = document.querySelectorAll('nav a');
-  const observateur = new IntersectionObserver(entrees => {
-    entrees.forEach(e => {
-      if (e.isIntersecting) liens.forEach(l => l.classList.toggle('actif', l.getAttribute('href') === '#' + e.target.id));
+  // Animations au défilement
+  const animEls = $$('.anim-entree');
+  if (!reduced && 'IntersectionObserver' in window) {
+    const obsAnim = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && (e.target.classList.add('anim-visible'), obsAnim.unobserve(e.target))), { rootMargin: '0px 0px -20px 0px' });
+    const rest = [...animEls].filter(el => el.getBoundingClientRect().top < innerHeight * 0.96 ? !el.classList.add('anim-visible') : true);
+    if (rest.length) { document.documentElement.classList.add('anim-ready'); rest.forEach(el => obsAnim.observe(el)); }
+  } else animEls.forEach(el => el.classList.add('anim-visible'));
+
+  // Recherche temps réel
+  const searchIn = $('#nav-search'), statusEl = $('#search-status'), secs = $$('main > section');
+  const norm = s => s.toLowerCase().replace(/œ/g, 'oe').replace(/æ/g, 'ae').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const normMap = s => { let n = '', m = []; for (let i = 0; i < s.length; i++) for (const c of norm(s[i])) { n += c; m.push(i); } return [n, [...m, s.length]]; };
+  let marks = [], activeIdx = -1, rawQ = '', matchSecs = 0;
+
+  const clearMarks = () => { marks.forEach(m => { const p = m.parentNode; if (p) { p.replaceChild(document.createTextNode(m.textContent), m); p.normalize(); } }); marks = []; activeIdx = -1; };
+  const highlight = (node, nq) => {
+    if (node.nodeType === 3) {
+      const [n, m] = normMap(node.textContent), hits = [];
+      for (let pos = 0, i; (i = n.indexOf(nq, pos)) >= 0; pos = i + nq.length) hits.push([m[i], m[i + nq.length]]);
+      if (!hits.length) return 0;
+      const frag = document.createDocumentFragment(); let last = 0;
+      hits.forEach(([a, b]) => {
+        if (a > last) frag.appendChild(document.createTextNode(node.textContent.slice(last, a)));
+        const mk = Object.assign(document.createElement('mark'), { className: 'search-highlight', textContent: node.textContent.slice(a, b) });
+        frag.appendChild(mk); marks.push(mk); last = b;
+      });
+      if (last < node.textContent.length) frag.appendChild(document.createTextNode(node.textContent.slice(last)));
+      node.parentNode.replaceChild(frag, node);
+      return hits.length;
+    }
+    if (node.nodeType !== 1 || /^(SCRIPT|STYLE|INPUT|TEXTAREA|SVG|BUTTON)$/i.test(node.tagName) || node.id === 'map' || node.id === 'search-status' || node.classList.contains('leaflet-container') || node.classList.contains('search-highlight')) return 0;
+    return [...node.childNodes].reduce((acc, ch) => acc + highlight(ch, nq), 0);
+  };
+  const focusMatch = (idx, keep) => {
+    if (!marks.length) return;
+    if (activeIdx >= 0) marks[activeIdx]?.classList.remove('search-highlight-active');
+    const t = marks[activeIdx = (idx + marks.length) % marks.length];
+    t.classList.add('search-highlight-active');
+    const d = t.closest('details'); if (d) d.open = true;
+    const r = t.getBoundingClientRect(), minY = $('nav').getBoundingClientRect().bottom + 8;
+    if (!keep || r.top < minY || r.bottom > innerHeight - 16) t.scrollIntoView({ behavior: beh, block: 'center' });
+    statusEl.querySelector('.search-status-msg').innerHTML = `<strong>${marks.length}</strong> résultat${marks.length > 1 ? 's' : ''} dans ${matchSecs} section${matchSecs > 1 ? 's' : ''} pour « ${esc(rawQ)} » (${activeIdx + 1}/${marks.length})`;
+  };
+  const resetSearch = clr => {
+    clearMarks(); secs.forEach(s => s.classList.remove('search-hidden'));
+    $$('main details[data-so]').forEach(d => { d.open = false; d.removeAttribute('data-so'); });
+    statusEl.hidden = true; statusEl.innerHTML = '';
+    if (clr) searchIn.value = '';
+    if (carte) setTimeout(() => carte.invalidateSize(), 50);
+  };
+  const runSearch = q => {
+    clearMarks(); $$('main details[data-so]').forEach(d => { d.open = false; d.removeAttribute('data-so'); });
+    rawQ = q.trim(); const nq = norm(rawQ);
+    if (nq.length < 2) return resetSearch(false);
+    matchSecs = 0;
+    secs.forEach(s => {
+      s.querySelectorAll('details').forEach(d => { if (!d.open && norm(d.textContent).includes(nq)) { d.dataset.so = '1'; d.open = true; } });
+      const n = highlight(s, nq);
+      s.classList.toggle('search-hidden', !n);
+      if (n) { s.classList.add('anim-visible'); matchSecs++; }
     });
-  }, { rootMargin: '-40% 0px -55% 0px' });
-  document.querySelectorAll('main section').forEach(s => observateur.observe(s));
+    statusEl.innerHTML = `<span class="search-status-msg">Aucun résultat pour « <strong>${esc(rawQ)}</strong> ».</span><span class="search-status-actions">${marks.length > 1 ? '<button type="button" id="search-prev">Précédent</button><button type="button" id="search-next">Suivant</button>' : ''}<button type="button" id="search-clear">Effacer</button></span>`;
+    statusEl.hidden = false;
+    if ($('#search-prev')) $('#search-prev').onclick = () => focusMatch(activeIdx - 1);
+    if ($('#search-next')) $('#search-next').onclick = () => focusMatch(activeIdx + 1);
+    $('#search-clear').onclick = () => { resetSearch(true); searchIn.focus(); };
+    if (marks.length) focusMatch(0, true); else statusEl.scrollIntoView({ behavior: beh, block: 'nearest' });
+  };
+  let tSearch;
+  searchIn.oninput = () => { clearTimeout(tSearch); tSearch = setTimeout(() => runSearch(searchIn.value), 220); };
+  searchIn.onkeydown = e => {
+    if (e.key === 'Escape') resetSearch(true);
+    else if (e.key === 'Enter' && marks.length) { e.preventDefault(); focusMatch(e.shiftKey ? activeIdx - 1 : activeIdx + 1); }
+  };
+  $$('a[href^="#"]').forEach(a => a.addEventListener('click', () => {
+    const id = a.getAttribute('href').slice(1);
+    if (id && document.getElementById(id)?.classList.contains('search-hidden')) resetSearch(true);
+  }));
+
+  // Boutons "Voir sur la carte"
+  $$('.btn-carte-lien[data-poi]').forEach(btn => btn.onclick = e => {
+    e.preventDefault();
+    if ($('#campus').classList.contains('search-hidden')) resetSearch(true);
+    $('#carte-reims').scrollIntoView({ behavior: beh, block: 'center' });
+    const m = marqueurs[btn.dataset.poi]; if (!m || !carte) return;
+    $$('.filtres-carte button').forEach(b => b.classList.toggle('actif', b.dataset.filtre === 'all'));
+    tousMarqueurs.forEach(mk => carte.addLayer(mk));
+    setTimeout(() => {
+      carte.invalidateSize();
+      if (reduced) { carte.setView(m.getLatLng(), 16, { animate: false }); m.openPopup(); }
+      else { carte.flyTo(m.getLatLng(), 16, { duration: 0.6 }); setTimeout(() => m.openPopup(), 700); }
+    }, reduced ? 50 : 500);
+  });
+})();
 </script>
 </body>
 </html>
